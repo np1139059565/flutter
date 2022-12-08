@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter (Chrome)",
+            "program": "lib/main.dart",
+            "deviceId": "chrome",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--web-renderer",
+                "html"
+            ]
+        },
+        {
+            "name": "Flutter (PEDM00)",
+            "program": "lib/main.dart",
+            "deviceId": "c339ae12",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
