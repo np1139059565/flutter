@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:reward_app/common/my_log.dart';
+
+import 'package:reward_app/common/def_style.dart';
 import 'package:reward_app/common/my_service.dart';
-import 'package:reward_app/job_list_page.dart';
-import 'dart:convert';
-import 'package:image_pickers/image_pickers.dart';
+import 'package:reward_app/common/step_widget.dart';
 
 class JobDetailPage extends StatefulWidget {
   const JobDetailPage({super.key, required this.jobInfo});
-  final double DEF_SIZE = 12;
-  final double TITLE_SIZE = 15;
-  final Color FONT_COLOR = Colors.black26;
   final jobInfo;
 
   @override
@@ -19,80 +15,6 @@ class JobDetailPage extends StatefulWidget {
 class _JobDetailPageState extends State<JobDetailPage> {
   @override
   Widget build(BuildContext context) {
-    final childrenArr = [
-      Row(
-        children: [
-          Text.rich(
-            style: TextStyle(
-              fontSize: widget.TITLE_SIZE,
-            ),
-            TextSpan(
-              text: "任务步骤",
-              children: [
-                TextSpan(
-                  text: " (请参照以下步骤完成做单)",
-                  style: TextStyle(
-                    color: Colors.black26,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ];
-    try {
-      final stepArr = json.decode(
-        widget.jobInfo["steps"],
-      ); //import 'dart:convert';
-      for (var i = 0; i < stepArr.length; i++) {
-        childrenArr.add(
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Center(
-                  child: Text(
-                    "${i + 1}",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                width: widget.TITLE_SIZE,
-                height: widget.TITLE_SIZE,
-                margin: EdgeInsets.only(
-                  right: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(
-                      widget.TITLE_SIZE,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      stepArr[i]["title"],
-                    ),
-                    getStepObj(stepArr[i]),
-                    Divider(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      MyLog.err(e);
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -108,11 +30,11 @@ class _JobDetailPageState extends State<JobDetailPage> {
       ),
       body: DefaultTextStyle.merge(
         style: TextStyle(
-          fontSize: widget.DEF_SIZE,
+          fontSize: DEF_SIZE,
         ),
         child: SingleChildScrollView(
           child: Container(
-            color: Colors.white10,
+            color: BACK_COLOR,
             child: Column(
               children: [
                 Container(
@@ -146,7 +68,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                         widget.jobInfo["title"],
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
-                                          fontSize: widget.TITLE_SIZE,
+                                          fontSize: TITLE_SIZE,
                                         ),
                                       ),
                                     ),
@@ -163,7 +85,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                           ],
                                           style: TextStyle(
                                             color: Colors.red,
-                                            fontSize: widget.TITLE_SIZE,
+                                            fontSize: TITLE_SIZE,
                                           ),
                                         ),
                                         textAlign: TextAlign.right,
@@ -180,7 +102,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                       child: Text(
                                         widget.jobInfo["job_type"],
                                         style: TextStyle(
-                                          color: widget.FONT_COLOR,
+                                          color: DISABLED_COLOR,
                                         ),
                                         textAlign: TextAlign.left,
                                       ),
@@ -189,7 +111,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                       child: Text(
                                         "支持设备:${widget.jobInfo["system_type"]}",
                                         style: TextStyle(
-                                          color: widget.FONT_COLOR,
+                                          color: DISABLED_COLOR,
                                         ),
                                         textAlign: TextAlign.right,
                                       ),
@@ -220,7 +142,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: Colors.black26,
+                          color: DISABLED_COLOR,
                         ),
                       ),
                     ),
@@ -232,7 +154,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             decoration: BoxDecoration(
                               border: Border(
                                 right: BorderSide(
-                                  color: Colors.black26,
+                                  color: DISABLED_COLOR,
                                 ),
                               ),
                             ),
@@ -243,7 +165,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   child: Text(
                                     "${(widget.jobInfo["avg_used_seconds"] / 60).toStringAsFixed(2)}分钟",
                                     style: TextStyle(
-                                      fontSize: widget.TITLE_SIZE,
+                                      fontSize: TITLE_SIZE,
                                     ),
                                   ),
                                 ),
@@ -251,7 +173,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   child: Text(
                                     "人均用时",
                                     style: TextStyle(
-                                      color: widget.FONT_COLOR,
+                                      color: DISABLED_COLOR,
                                     ),
                                   ),
                                 ),
@@ -264,7 +186,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             decoration: BoxDecoration(
                               border: Border(
                                 right: BorderSide(
-                                  color: Colors.black26,
+                                  color: DISABLED_COLOR,
                                 ),
                               ),
                             ),
@@ -275,7 +197,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   child: Text(
                                     "${widget.jobInfo["success_count"]}",
                                     style: TextStyle(
-                                      fontSize: widget.TITLE_SIZE,
+                                      fontSize: TITLE_SIZE,
                                     ),
                                   ),
                                 ),
@@ -283,7 +205,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   child: Text(
                                     "完成人数",
                                     style: TextStyle(
-                                      color: widget.FONT_COLOR,
+                                      color: DISABLED_COLOR,
                                     ),
                                   ),
                                 ),
@@ -296,7 +218,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             decoration: BoxDecoration(
                               border: Border(
                                 right: BorderSide(
-                                  color: Colors.black26,
+                                  color: DISABLED_COLOR,
                                 ),
                               ),
                             ),
@@ -307,7 +229,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   child: Text(
                                     "${(widget.jobInfo["avg_check_seconds"] / 60).toStringAsFixed(2)}分钟",
                                     style: TextStyle(
-                                      fontSize: widget.TITLE_SIZE,
+                                      fontSize: TITLE_SIZE,
                                     ),
                                   ),
                                 ),
@@ -315,7 +237,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   child: Text(
                                     "平均审核",
                                     style: TextStyle(
-                                      color: widget.FONT_COLOR,
+                                      color: DISABLED_COLOR,
                                     ),
                                   ),
                                 ),
@@ -331,7 +253,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                 child: Text(
                                   "${widget.jobInfo["success_ratio"]}%",
                                   style: TextStyle(
-                                    fontSize: widget.TITLE_SIZE,
+                                    fontSize: TITLE_SIZE,
                                   ),
                                 ),
                               ),
@@ -339,7 +261,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                 child: Text(
                                   "总通过率",
                                   style: TextStyle(
-                                    color: widget.FONT_COLOR,
+                                    color: DISABLED_COLOR,
                                   ),
                                 ),
                               ),
@@ -361,7 +283,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                       Text(
                         "剩余名额${widget.jobInfo["total_count"] - widget.jobInfo["success_count"]}",
                         style: TextStyle(
-                          color: widget.FONT_COLOR,
+                          color: DISABLED_COLOR,
                         ),
                       ),
                     ],
@@ -385,7 +307,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                           Text(
                             "任务说明",
                             style: TextStyle(
-                              fontSize: widget.TITLE_SIZE,
+                              fontSize: TITLE_SIZE,
                             ),
                           ),
                         ],
@@ -411,12 +333,16 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   ),
                   padding: EdgeInsets.only(
                     left: 10,
+                    right: 10,
                   ),
                   margin: EdgeInsets.only(
                     top: 10,
                   ),
-                  child: Column(
-                    children: childrenArr,
+                  child: StepWidget.getList(
+                    "任务步骤",
+                    "请参照以下步骤完成做单",
+                    widget.jobInfo,
+                    context: context
                   ),
                 ),
               ],
@@ -425,37 +351,5 @@ class _JobDetailPageState extends State<JobDetailPage> {
         ),
       ),
     );
-  }
-
-  Widget getStepObj(stepInfo) {
-    switch (stepInfo["type"]) {
-      case "image":
-        return Flex(
-          direction: Axis.horizontal,
-          children: [
-            Expanded(
-              child: Image.network(
-                "${MyService.parentUrl}/images/${stepInfo["value"]}",
-                color: Colors.blue,
-                width: 360,
-              ),
-            ),
-            Expanded(
-              child: Center(child: ElevatedButton.icon(
-                icon: Icon(Icons.camera_alt),
-                label: Text("添加图片"),
-                onPressed: () async {
-                  ImagePickers.pickerPaths().then((List medias){
-                    print("aaaaaaaaaaaaaaaaa");
-                    print(medias);
-                  });
-                },
-              ),),
-            ),
-          ],
-        );
-      default:
-        return Text("not find type");
-    }
   }
 }

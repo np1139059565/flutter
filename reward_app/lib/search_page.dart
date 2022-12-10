@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'common/def_style.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage(
       {super.key, required this.defSearchText, required this.hintText});
@@ -27,7 +29,7 @@ class _SearchPageState extends State<SearchPage> {
             prefixIcon: Icon(
               Icons.search,
               size: 25,
-              color: Colors.black26,
+              color: DISABLED_COLOR,
             ),
             prefixIconConstraints: BoxConstraints(maxHeight: 25, minWidth: 40),
             // contentPadding必须设置isDense才生效
@@ -38,10 +40,10 @@ class _SearchPageState extends State<SearchPage> {
             filled: true,
             fillColor: Colors.white,
             hintText: widget.hintText,
-            hintStyle: TextStyle(color: Colors.black26),
+            hintStyle: TextStyle(color: DISABLED_COLOR),
           ),
           textInputAction: TextInputAction.search,
-          cursorColor: Colors.blue,
+          cursorColor: DEF_COLOR,
           onSubmitted: (v) {
             Navigator.pop(context, v);
           },

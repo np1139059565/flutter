@@ -5,6 +5,7 @@ class MyLog {
   };
   static final err = (e) {
     print("===========================================");
+    
     if (e.message!=null) {
       print(e.message);
     } else if (e.error!=null){

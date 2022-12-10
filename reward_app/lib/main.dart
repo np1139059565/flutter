@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'common/def_style.dart';
 import 'index_page.dart';
 
 void main() {
@@ -12,11 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: DEF_COLOR,
       ),
       home: const IndexPage(),
     );
   }
 }
-
-

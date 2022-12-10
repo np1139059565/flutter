@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:reward_app/job_list_page.dart';
+
+import 'common/def_style.dart';
+import 'job_list_page.dart';
+import 'user_page.dart';
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
@@ -12,30 +15,28 @@ class _IndexPageState extends State<IndexPage> {
   int pageIndex = 0;
 
   Widget? scaffoldBody;
+  AppBar? appBar;
 
-
-@override
-void initState() {
+  @override
+  void initState() {
     super.initState();
-    showPage();
+    switchPage(1);
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBar,
       body: scaffoldBody,
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
-          // BottomNavigationBarItem(icon: Icon(Icons.home), label: "大厅"),
-          // BottomNavigationBarItem(icon: Icon(Icons.home), label: "邀请赚钱"),
-          // BottomNavigationBarItem(icon: Icon(Icons.home), label: "发现"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的")
         ],
         currentIndex: pageIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black26,
+        selectedItemColor: DEF_COLOR,
+        unselectedItemColor: DISABLED_COLOR,
         showUnselectedLabels: true,
         onTap: switchPage,
       ),
@@ -45,15 +46,16 @@ void initState() {
   void switchPage(int i) {
     setState(() {
       pageIndex = i;
-      showPage();
-    });
-  }
-  void showPage(){
-       switch (pageIndex) {
+      switch (pageIndex) {
         case 0:
-          scaffoldBody=JobListPage();
+          scaffoldBody = JobListPage();
+          appBar = JobListPage.getAppBar();
+          break;
+        case 1:
+          scaffoldBody = UserPage();
+          appBar = UserPage.getAppBar();
           break;
       }
+    });
   }
-
 }
