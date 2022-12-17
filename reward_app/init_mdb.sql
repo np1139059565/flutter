@@ -29,7 +29,7 @@ create table all_job(
 	steps varchar(4000));
 
 /**********************insert*****************************/
-insert into all_user(name,pwd) values('admin','0192023a7bbd73250516f069df18b500');/*admin,admin123*/
+insert into all_user(user,pwd) values('admin','0192023a7bbd73250516f069df18b500');/*admin,admin123*/
 insert into all_job values(
 	1,
 	1,
