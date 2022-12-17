@@ -25,7 +25,7 @@ function getContTypeByFileName(fileName) {
 }
 
 function handFile(request, response) {
-  const filePath = "/root/reward_app/web/" + request.url.substr(1);
+  const filePath = "../web/" + request.url.substr(1);
   contType = getContTypeByFileName(filePath);
   if (contType) {
     let fs = require("fs");

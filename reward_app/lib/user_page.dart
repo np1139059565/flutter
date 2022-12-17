@@ -36,7 +36,8 @@ class _UserPageState extends State<UserPage> {
         _this_user = users.first;
       });
     } else {
-      final time=new DateTime.now();
+      final time=new DateTime.now().toString();
+      MyLog.inf(time);
       MyService.getAsync(
         MyService.userList,
         (e,body)=>{
