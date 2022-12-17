@@ -16,7 +16,12 @@ function _get(request, response) {
             console.info('list query is err..', e);
             return response.writo(500, 'sql err!');
         }
-        response.writo(200, JSON.stringify({ data: r}));
+
+        const user=r[0][f[0].name];
+        const pwd=r[0][f[1].name];
+        const time=new Date().toJSON().split('.')[0]
+        const encode=md5(user+':'+pwd+':'+time);
+        response.writo(encode==params.key?200:500, JSON.stringify({ time: time,encode:encode}));
     });
 }
 exports.get = _get
