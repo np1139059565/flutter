@@ -5,11 +5,15 @@ class MyLog {
   };
   static final err = (e) {
     print("====================error:=======================");
-    
-    if (e.message!=null) {
+
+    if (e.message != null) {
       print(e.message);
-    } else if (e.error!=null){
+    }
+    if (e.error != null) {
       print(e.error);
+    }
+    if (e.response != null) {
+      print(e.response);
     }
   };
 }

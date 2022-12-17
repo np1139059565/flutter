@@ -1,5 +1,7 @@
-let mdb = require("../../common/export_mdb");
 const md5 = require('md5-node');
+
+let mdb = require("../../common/export_mdb");
+const mtime=require('../../common/export_mtime');
 function _get(request, response) {
     const params = Object.fromEntries(request.url.indexOf('?') < 0 ? [] : request.url.split('?')[1].split('&').map(kv => kv.split('=')));
     let msg = 'service is err!';
@@ -19,8 +21,8 @@ function _get(request, response) {
 
         const user=r[0][f[0].name];
         const pwd=r[0][f[1].name];
-        const time=new Date().toJSON().split('.')[0]
-        const encode=md5(user+':'+pwd+':'+time);
+        const session=mtime.getSeconds();
+        const encode=md5(params.uid+':'+user+':'+pwd+':'+session);
         response.writo(encode==params.key?200:500, JSON.stringify({ time: time,encode:encode}));
     });
 }

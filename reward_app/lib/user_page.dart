@@ -36,18 +36,24 @@ class _UserPageState extends State<UserPage> {
         _this_user = users.first;
       });
     } else {
-      final time=new DateTime.now().toString();
-      MyLog.inf(time);
-      MyService.getAsync(
-        MyService.userList,
-        (e,body)=>{
-
-        },
-        queryParameters: {
-          'time':time,
-          'key':md5.convert(new Utf8Encoder().convert('admin:admin123:$time'))
-        },
-      );
+      MyService.getAsync(MyService.sessionUri, (e, session) {
+        if (session.isEmpty) return;
+        final uid = 1;
+        final user = 'admin';
+        final pwd = '0192023a7bbd73250516f069df18b500';
+        final encode =
+            md5.convert(new Utf8Encoder().convert('$uid:$user:$pwd:$session'));
+        MyService.getAsync(
+          MyService.loginUri,
+          (e, body) {
+            MyLog.inf('$uid:$user:$pwd:$session>$encode');
+          },
+          queryParameters: {
+            'uid': uid,
+            'key': encode,
+          },
+        );
+      });
     }
     return users.length > 0;
   }
