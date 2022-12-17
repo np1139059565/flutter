@@ -9,7 +9,7 @@ drop table if exists all_user;
 create table all_user(
 	uid int primary key auto_increment,
 	name char(20) not null,
-	pwd char(20) not null,/*使用md5加密*/
+	pwd char(33) not null,/*使用md5加密*/
 	createtime datetime default current_timestamp(0) on update current_timestamp(0));
 
 drop table if exists all_job;
