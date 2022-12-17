@@ -3,7 +3,7 @@ const md5 = require('md5-node');
 function _get(request, response) {
     const params = Object.fromEntries(request.url.indexOf('?') < 0 ? [] : request.url.split('?')[1].split('&').map(kv => kv.split('=')));
     let msg = 'service is err!';
-    if (parseInt(params.uid) >= 0) {
+    if (parseInt(params.uid) > 0) {
         msg = 'uid is not find!';
     }
     if (params.key == null) {
