@@ -23,7 +23,7 @@ function _get(request, response) {
         const pwd=r[0][f[1].name];
         const session=mtime.getSeconds();
         const encode=md5(params.uid+':'+user+':'+pwd+':'+session);
-        response.writo(encode==params.key?200:500, JSON.stringify({ time: time,encode:encode}));
+        response.writo(encode==params.key?200:500, JSON.stringify({ session: session,encode:encode}));
     });
 }
 exports.get = _get

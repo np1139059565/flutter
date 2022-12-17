@@ -37,7 +37,10 @@ class _UserPageState extends State<UserPage> {
       });
     } else {
       MyService.getAsync(MyService.sessionUri, (e, session) {
-        if (session.isEmpty) return;
+        if (session==null){
+          MyLog.inf('not find session..');
+          return;
+        }
         final uid = 1;
         final user = 'admin';
         final pwd = '0192023a7bbd73250516f069df18b500';
