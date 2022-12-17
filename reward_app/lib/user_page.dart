@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:reward_app/common/my_log.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
+import 'common/my_log.dart';
 import 'common/def_style.dart';
 import 'common/my_service.dart';
 import 'common/my_file.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
+
+  final USER_DIR = 'users';
 
   static dynamic getAppBar() {
     return AppBar(
@@ -23,21 +27,39 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  String _this_user = '';
+  bool checkLogin() {
+    final users = MyFile.list(path: widget.USER_DIR);
+    MyLog.inf('check login $users..');
+    if (users.length > 0) {
+      setState(() {
+        _this_user = users.first;
+      });
+    } else {
+      final time=new DateTime.now();
+      MyService.getAsync(
+        MyService.userList,
+        (e,body)=>{
+
+        },
+        queryParameters: {
+          'time':time,
+          'key':md5.convert(new Utf8Encoder().convert('admin:admin123:$time'))
+        },
+      );
+    }
+    return users.length > 0;
+  }
+
   @override
   void initState() {
-    MyFile().init(callback: (){
-      final a=MyFile().listSync(path: 'users');
-      print(a);
-    });
+    MyFile.initAsync(callback: checkLogin);
   }
-  @override
-  void didChangeDependencies(){
 
-  }
+  void checkUser() {}
 
   @override
   Widget build(BuildContext c) {
-
     return Column(
       children: [
         Row(
@@ -69,7 +91,7 @@ class _UserPageState extends State<UserPage> {
                     ),
                   ),
                   label: Text(
-                    "点击登录",
+                    _this_user != '' ? _this_user : "点击登录",
                     style: TextStyle(
                       fontSize: TITLE_SIZE * 1.2,
                       overflow: TextOverflow.ellipsis,
@@ -77,8 +99,9 @@ class _UserPageState extends State<UserPage> {
                     maxLines: 3,
                   ),
                   onPressed: () {
-                    dynamic list1 = MyFile().listSync();
-                    MyLog.inf(list1);
+                    if (_this_user.isEmpty) {
+                      checkLogin();
+                    }
                   },
                   style: ButtonStyle(
                     elevation: MaterialStateProperty.all(0),

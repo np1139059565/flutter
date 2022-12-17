@@ -1,10 +1,10 @@
 class MyLog {
   static final inf = (str) {
-    print("-------------------------------------------");
+    print("--------------------info:-----------------------");
     print(str);
   };
   static final err = (e) {
-    print("===========================================");
+    print("====================error:=======================");
     
     if (e.message!=null) {
       print(e.message);

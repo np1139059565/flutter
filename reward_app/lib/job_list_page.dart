@@ -116,8 +116,11 @@ class _JobListPageState extends State<JobListPage> {
             child: Container(
               color: Colors.white,
               child: ListView.separated(
-                separatorBuilder: (c,i){
-                  return Container(color: DISABLED_COLOR,height: 0.1,);
+                separatorBuilder: (c, i) {
+                  return Container(
+                    color: DISABLED_COLOR,
+                    height: 0.1,
+                  );
                 },
                 padding: EdgeInsets.only(top: 0),
                 itemCount: jobList.length,
@@ -125,7 +128,8 @@ class _JobListPageState extends State<JobListPage> {
                   //如果到了表尾
                   if (jobList[i] == JOB_LIST_END) {
                     //不到最后一页,继续获取数据
-                    if (nextPage()) {
+                    bool nextSuccess = nextPage();
+                    if (nextSuccess) {
                       //加载时显示loading
                       return Container(
                         padding: EdgeInsets.all(16.0),
@@ -172,7 +176,7 @@ class _JobListPageState extends State<JobListPage> {
 
   bool nextPage() {
     if (jobPage <= jobMaxPage) {
-      MyService().getJobList((e, d) {
+      MyService.getJobListAsync((e, d) {
         if (e != null) {
           setState(
             () {
@@ -182,18 +186,19 @@ class _JobListPageState extends State<JobListPage> {
           );
           return MyLog.err(e);
         }
-        MyLog.inf(d);
-        jobPage += 1;
-        dynamic newLine = d["data"];
-        jobMaxPage = d["maxPage"];
 
-        setState(
-          () {
-            if (newLine.length > 0) {
-              jobList.insertAll(jobList.length - 1, newLine);
-            }
-          },
-        );
+        jobPage += 1;
+        jobMaxPage = d["maxPage"];
+        dynamic newLine = d["data"];
+        if (mounted) {
+          setState(
+            () {
+              if (newLine.length > 0) {
+                jobList.insertAll(jobList.length - 1, newLine);
+              }
+            },
+          );
+        }
       }, search: searchText, pageSize: jobPageSize, page: jobPage);
       return true;
     } else

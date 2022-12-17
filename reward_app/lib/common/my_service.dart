@@ -1,19 +1,20 @@
 import 'package:dio/dio.dart';
 
 class MyService {
-  final Dio dio = Dio();
+  static final Dio dio = Dio();
   // final HttpClient hc = HttpClient();
   static final _SCHEME = "http";
-  static final _HOST = "120.78.86.64";
+  static final _HOST = "192.168.1.32";
   static final _PORT = 8888;
-  Map<String, String> paths = {
-    "jobList": "/job/list",
-    "userList": "/user/list"
-  };
+
+  static final jobList='/job/list';
+  static final userList='/user/list';
+
 
   static String parentUrl = "$_SCHEME://$_HOST:$_PORT";
 
-  void _get(String path, Map<String, String> data, Function callback) async {
+  static void getAsync(
+      String path, Function callback, {Map<String, dynamic>? queryParameters}) async {
     dynamic err;
     dynamic respBody;
     try {
@@ -23,37 +24,40 @@ class MyService {
       // HttpClientResponse resp = await req.close();
       // respBody = await resp.transform(utf8.decoder).join();
       final resp =
-          await dio.get(path = "$parentUrl/$path", queryParameters: data);
+          await dio.get(path = "$parentUrl/$path", queryParameters: queryParameters);
       respBody = resp.data;
     } catch (e) {
       err = e;
     } finally {
       // hc.close();
+      callback(err, respBody);
     }
-    callback(err, respBody);
   }
 
-  void _post(String path, Map<String, String> data, callback) async {
+  static void postAsync(String path, Function callback, {dynamic? data,Map<String,dynamic>? queryParameters}) async {
     dynamic err;
     String? respBody;
     try {
-      final resp = await dio.post(path = "$parentUrl/$path", data: data);
+      final resp = await dio.post(path = "$parentUrl/$path", data: data,queryParameters: queryParameters);
       respBody = resp.data;
     } catch (e) {
       err = e;
+      callback(err, respBody);
     }
-    callback(err, respBody);
   }
 
-  void getJobList(callback,
+  static void getJobListAsync(callback,
       {int page = 1, int pageSize = 1, String search = ""}) {
-    return _get(
-        paths['jobList'].toString(),
-        {
-          "page": page.toString(),
-          "page_size": pageSize.toString(),
-          "search": search
-        },
-        callback);
+    return getAsync(
+      jobList,
+      callback,
+      queryParameters:{
+        "page": page.toString(),
+        "page_size": pageSize.toString(),
+        "search": search
+      },
+    );
   }
+
+
 }
