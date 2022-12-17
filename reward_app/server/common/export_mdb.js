@@ -5,7 +5,7 @@ const pool=mysql.createPool({
     multipleStatements:true,
     host     : 'localhost',
     user     : 'root',
-    password : 'Np337586',
+    password : '3375863936lcy',
     database : 'reward_app'
   });
 console.info(pool);

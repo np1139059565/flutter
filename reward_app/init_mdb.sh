@@ -1,1 +1,1 @@
-mysql -u root -pNp337586</root/reward_app/init_mdb.sql
+mysql -u root -p3375863936lcy<./init_mdb.sql
