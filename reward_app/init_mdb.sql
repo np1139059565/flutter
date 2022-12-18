@@ -33,6 +33,7 @@ create table all_job(
 /**********************insert*****************************/
 insert into all_user(user,pwd) values('admin','0192023a7bbd73250516f069df18b500');/*admin,admin123*/
 insert into all_job values(
+	0,
     1,
     '微信扫一扫',
     1.34,
