@@ -34,15 +34,16 @@ create table all_job(
 insert into all_user(user,pwd) values('admin','0192023a7bbd73250516f069df18b500');/*admin,admin123*/
 insert into all_job values(
     1,
-    1,
     '微信扫一扫',
     1.34,
     '浏览|外卖省优',
     '安卓 苹果',
+	3600,
     180,
     154,
     186,
     25,
+	1800,
     49.00,
     '限首次领取即可!',
     '[{"title":"微信扫码入群,进入 群公告 点击链接领取!","type":"image","value":"/title.png"},{"title":"这种不合格,不要提交","type":"copy","value":"https://www.baidu.com"},{"title":"领取之前必须和此图一样!","type":"input","value":""}]');
