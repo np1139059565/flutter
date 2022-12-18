@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'common/def_style.dart';
-import 'job_list_page.dart';
+import 'home_page.dart';
 import 'user_page.dart';
 
 class IndexPage extends StatefulWidget {
@@ -48,8 +48,8 @@ class _IndexPageState extends State<IndexPage> {
       pageIndex = i;
       switch (pageIndex) {
         case 0:
-          scaffoldBody = JobListPage();
-          appBar = JobListPage.getAppBar();
+          scaffoldBody = HomePage();
+          appBar = HomePage.getAppBar();
           break;
         case 1:
           scaffoldBody = UserPage();

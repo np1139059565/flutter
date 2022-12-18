@@ -33,40 +33,44 @@ class _UserPageState extends State<UserPage> {
     MyLog.inf('check login $users..');
     if (users.length > 0) {
       setState(() {
-        _this_user = users.first;
-      });
-    } else {
-      MyService.getAsync(MyService.sessionUri, (e, session) {
-        if (session==null){
-          MyLog.inf('not find session..');
-          return;
-        }
-        final uid = 1;
-        final user = 'admin';
-        final pwd = '0192023a7bbd73250516f069df18b500';
-        final encode =
-            md5.convert(new Utf8Encoder().convert('$uid:$user:$pwd:$session'));
-        MyService.getAsync(
-          MyService.loginUri,
-          (e, body) {
-            MyLog.inf('$uid:$user:$pwd:$session>$encode');
-          },
-          queryParameters: {
-            'uid': uid,
-            'key': encode,
-          },
-        );
+        _this_user = users.first.split('/').last;
       });
     }
     return users.length > 0;
+  }
+
+  void login(uid, user, pwd) {
+    MyService.getAsync(MyService.sessionUri, (e, session) {
+      if (session == null) {
+        MyLog.inf('not find session..');
+        return;
+      }
+      final encode =
+          md5.convert(new Utf8Encoder().convert('$uid:$user:$pwd:$session'));
+      MyService.getAsync(
+        MyService.loginUri,
+        (e, body) {
+          MyLog.inf('$uid:$user:$pwd:$session>$encode');
+          if (body != null) {
+            MyLog.inf('$user login is success');
+            MyFile.createDir('${widget.USER_DIR}/$user');
+            setState(() {
+              _this_user = user;
+            });
+          }
+        },
+        queryParameters: {
+          'uid': uid,
+          'key': encode,
+        },
+      );
+    });
   }
 
   @override
   void initState() {
     MyFile.initAsync(callback: checkLogin);
   }
-
-  void checkUser() {}
 
   @override
   Widget build(BuildContext c) {
@@ -86,22 +90,29 @@ class _UserPageState extends State<UserPage> {
                   icon: Container(
                     width: 80,
                     height: 80,
+                    child: _this_user.isEmpty
+                        ? Icon(
+                            Icons.person,
+                            size: 80,
+                            color: DISABLED_COLOR,
+                          )
+                        : null,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        40,
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          "${MyService.parentUrl}/images/title.png",
-                          // color: Colors.blue,
-                        ),
-                        fit: BoxFit.cover,
-                      ),
+                      borderRadius: BorderRadius.circular(40),
+                      image: _this_user.isEmpty
+                          ? null
+                          : DecorationImage(
+                              image: NetworkImage(
+                                "${MyService.parentUrl}/images/title.png",
+                                // color: Colors.blue,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   label: Text(
-                    _this_user != '' ? _this_user : "点击登录",
+                    _this_user.isEmpty ? "点击登录" : _this_user,
                     style: TextStyle(
                       fontSize: TITLE_SIZE * 1.2,
                       overflow: TextOverflow.ellipsis,
@@ -110,7 +121,12 @@ class _UserPageState extends State<UserPage> {
                   ),
                   onPressed: () {
                     if (_this_user.isEmpty) {
-                      checkLogin();
+                      login(1, 'admin', '0192023a7bbd73250516f069df18b500');
+                    } else {
+                      setState(() {
+                        _this_user = '';
+                      });
+                      MyFile.deleteDir('${widget.USER_DIR}/$_this_user');
                     }
                   },
                   style: ButtonStyle(
@@ -154,6 +170,9 @@ class _UserPageState extends State<UserPage> {
                                     children: [
                                       OutlinedButton(
                                         child: Text("账单"),
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: DEF_COLOR),
+                                        ),
                                         onPressed: () {},
                                       ),
                                       Container(
@@ -162,6 +181,9 @@ class _UserPageState extends State<UserPage> {
                                         ),
                                         child: OutlinedButton(
                                           child: Text("提现"),
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: DEF_COLOR),
+                                          ),
                                           onPressed: () {},
                                         ),
                                       ),
@@ -192,6 +214,9 @@ class _UserPageState extends State<UserPage> {
                                       children: [
                                         OutlinedButton(
                                           child: Text("账单"),
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: DEF_COLOR),
+                                          ),
                                           onPressed: () {},
                                         ),
                                         Container(
@@ -200,6 +225,10 @@ class _UserPageState extends State<UserPage> {
                                           ),
                                           child: OutlinedButton(
                                             child: Text("提现"),
+                                            style: OutlinedButton.styleFrom(
+                                              side:
+                                                  BorderSide(color: DEF_COLOR),
+                                            ),
                                             onPressed: () {},
                                           ),
                                         ),
@@ -228,17 +257,15 @@ class _UserPageState extends State<UserPage> {
                                   Container(
                                     width: 60,
                                     height: 60,
+                                    child: Icon(
+                                      Icons.border_color,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: DEF_COLOR,
+                                      color: Colors.amber,
                                       borderRadius: BorderRadius.circular(
                                         30,
-                                      ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          "${MyService.parentUrl}/images/title.png",
-                                          // color: Colors.blue,
-                                        ),
-                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
@@ -260,22 +287,50 @@ class _UserPageState extends State<UserPage> {
                                   Container(
                                     width: 60,
                                     height: 60,
+                                    child: Icon(
+                                      Icons.assignment_turned_in,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: DEF_COLOR,
+                                      color: Colors.cyan,
                                       borderRadius: BorderRadius.circular(
                                         30,
-                                      ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          "${MyService.parentUrl}/images/title.png",
-                                          // color: Colors.blue,
-                                        ),
-                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
                                   Text(
                                     "我的接单",
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              width: 100,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 60,
+                                    height: 60,
+                                    child: Icon(
+                                      Icons.card_membership,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.deepOrange,
+                                      borderRadius: BorderRadius.circular(
+                                        30,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    "开通会员",
                                     style: TextStyle(
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -301,16 +356,14 @@ class _UserPageState extends State<UserPage> {
                                     icon: Container(
                                       width: 40,
                                       height: 40,
+                                      child: Icon(
+                                        Icons.announcement,
+                                        size: 25,
+                                        color: Colors.white,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.amber,
                                         borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            "${MyService.parentUrl}/images/title.png",
-                                            // color: Colors.blue,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
                                       ),
                                     ),
                                     label: Text(
@@ -318,6 +371,7 @@ class _UserPageState extends State<UserPage> {
                                       style: TextStyle(
                                         fontSize: TITLE_SIZE,
                                         overflow: TextOverflow.ellipsis,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                       maxLines: 4,
                                     ),
@@ -348,16 +402,14 @@ class _UserPageState extends State<UserPage> {
                                     icon: Container(
                                       width: 40,
                                       height: 40,
+                                      child: Icon(
+                                        Icons.people_outline,
+                                        size: 25,
+                                        color: Colors.white,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.blue,
                                         borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            "${MyService.parentUrl}/images/title.png",
-                                            // color: Colors.blue,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
                                       ),
                                     ),
                                     label: Text(
@@ -365,6 +417,7 @@ class _UserPageState extends State<UserPage> {
                                       style: TextStyle(
                                         fontSize: TITLE_SIZE,
                                         overflow: TextOverflow.ellipsis,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                       maxLines: 4,
                                     ),
@@ -395,16 +448,14 @@ class _UserPageState extends State<UserPage> {
                                     icon: Container(
                                       width: 40,
                                       height: 40,
+                                      child: Icon(
+                                        Icons.call,
+                                        size: 25,
+                                        color: Colors.white,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.cyan,
                                         borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            "${MyService.parentUrl}/images/title.png",
-                                            // color: Colors.blue,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
                                       ),
                                     ),
                                     label: Text(
@@ -412,6 +463,7 @@ class _UserPageState extends State<UserPage> {
                                       style: TextStyle(
                                         fontSize: TITLE_SIZE,
                                         overflow: TextOverflow.ellipsis,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                       maxLines: 4,
                                     ),
@@ -442,16 +494,14 @@ class _UserPageState extends State<UserPage> {
                                     icon: Container(
                                       width: 40,
                                       height: 40,
+                                      child: Icon(
+                                        Icons.home,
+                                        size: 25,
+                                        color: Colors.white,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.deepOrange,
                                         borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            "${MyService.parentUrl}/images/title.png",
-                                            // color: Colors.blue,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
                                       ),
                                     ),
                                     label: Text(
@@ -459,6 +509,7 @@ class _UserPageState extends State<UserPage> {
                                       style: TextStyle(
                                         fontSize: TITLE_SIZE,
                                         overflow: TextOverflow.ellipsis,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                       maxLines: 4,
                                     ),
@@ -489,16 +540,14 @@ class _UserPageState extends State<UserPage> {
                                     icon: Container(
                                       width: 40,
                                       height: 40,
+                                      child: Icon(
+                                        Icons.settings,
+                                        size: 25,
+                                        color: Colors.white,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.green,
                                         borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            "${MyService.parentUrl}/images/title.png",
-                                            // color: Colors.blue,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
                                       ),
                                     ),
                                     label: Text(
@@ -506,6 +555,7 @@ class _UserPageState extends State<UserPage> {
                                       style: TextStyle(
                                         fontSize: TITLE_SIZE,
                                         overflow: TextOverflow.ellipsis,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                       maxLines: 4,
                                     ),

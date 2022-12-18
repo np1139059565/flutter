@@ -281,7 +281,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   child: Row(
                     children: [
                       Text(
-                        "剩余名额${widget.jobInfo["total_count"] - widget.jobInfo["success_count"]}",
+                        '''剩余名额:${widget.jobInfo["total_count"] - widget.jobInfo["success_count"]}
+                         做单时间:${(widget.jobInfo["max_used_seconds"]/ 60).toStringAsFixed(2)}分钟
+                          审核时间:${(widget.jobInfo["max_check_seconds"]/ 60).toStringAsFixed(2)}分钟''',
                         style: TextStyle(
                           color: DISABLED_COLOR,
                         ),

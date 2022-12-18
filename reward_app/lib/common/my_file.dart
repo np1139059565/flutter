@@ -27,7 +27,7 @@ class MyFile {
     if (_PARENT_PATH == '') {
       MyLog.err(Exception('my file is not init!'));
     }
-    return '$_PARENT_PATH${path != '' ? '/$path' : ''}';
+    return '$_PARENT_PATH${path!.isEmpty ? '' : '/$path'}';
   }
 
   static File getFile({String? path = '', bool? checkExists = true}) {
@@ -52,15 +52,18 @@ class MyFile {
   }
 
   static Iterable<String> list({String? path = ''}) {
-    final dir = getDir(path: path);
+    final dir = getDir(path: path, checkExists: false);
     return dir.existsSync()
         ? dir.listSync().map((d) => d.path)
         : Iterable.empty();
   }
 
   static void createFile(String path) =>
-      getFile(path: path, checkExists: false).createSync();
+      getFile(path: path, checkExists: false).createSync(recursive: true);
 
   static void createDir(String path) =>
-      getDir(path: path, checkExists: false).createSync();
+      getDir(path: path, checkExists: false).createSync(recursive: true);
+
+  static void deleteDir(String path) =>
+      getDir(path: path, checkExists: false).deleteSync(recursive: true);
 }

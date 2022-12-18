@@ -1,36 +1,26 @@
 import 'package:flutter/material.dart';
 
 import 'common/def_style.dart';
-import 'search_page.dart';
 import 'job_detail_page.dart';
 import 'common/my_service.dart';
 import 'common/my_log.dart';
 
 class JobListPage extends StatefulWidget {
-  const JobListPage({
-    super.key,
-  });
-
-  static dynamic getAppBar() {
-    return null;
-  }
+  const JobListPage({super.key});
 
   @override
   State<JobListPage> createState() => _JobListPageState();
 }
 
 class _JobListPageState extends State<JobListPage> {
-  final SEARCH_RIGHT_WIDTH_MAX =
-      "                                                                                                                                                  ";
-  final SEARCH_HINT_TEXT = "任务标题";
-  String searchText = "";
-
-  final JOB_LIST_ERR = "###err###";
+  static String JOB_LIST_ERR = "###err###";
   static String JOB_LIST_END = "###end###";
+
   final jobList = <dynamic>[JOB_LIST_END];
   int jobPageSize = 8;
   int jobPage = 1;
   int jobMaxPage = 1;
+  String _searchText = '';
 
   @override
   void initState() {
@@ -43,135 +33,73 @@ class _JobListPageState extends State<JobListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTextStyle.merge(
-      style: TextStyle(
-        fontSize: DEF_SIZE,
-      ),
-      child: Flex(
-        direction: Axis.vertical,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.only(
-                top: 50,
-                left: 10,
-                bottom: 10,
-                right: 10,
+    return ListView.separated(
+      separatorBuilder: (c, i) {
+        return Container(
+          color: DISABLED_COLOR,
+          height: 0.1,
+        );
+      },
+      padding: EdgeInsets.only(top: 0),
+      itemCount: jobList.length,
+      itemBuilder: (BuildContext c, int i) {
+        //如果到了表尾
+        if (jobList[i] == JOB_LIST_END) {
+          //不到最后一页,继续获取数据
+          bool nextSuccess = nextPage();
+          if (nextSuccess) {
+            //加载时显示loading
+            return Container(
+              padding: EdgeInsets.all(16.0),
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 24.0,
+                height: 24.0,
+                child: CircularProgressIndicator(strokeWidth: 2.0),
               ),
-              color: DEF_COLOR,
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.search),
-                label: Text(
-                  "${searchText == "" ? SEARCH_HINT_TEXT : searchText}${SEARCH_RIGHT_WIDTH_MAX}",
-                  style: TextStyle(
-                    fontSize: TITLE_SIZE,
-                  ),
-                ),
-                onPressed: () async {
-                  var inputStr = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return SearchPage(
-                          defSearchText: searchText,
-                          hintText: SEARCH_HINT_TEXT,
-                        );
-                      },
-                    ),
-                  );
-                  MyLog.inf("search text:$inputStr");
-                  if (inputStr != null) {
-                    setState(
-                      () {
-                        jobList.clear();
-                        jobList.add(JOB_LIST_END);
-                        searchText = inputStr;
-                        jobPage = 1;
-                        jobMaxPage = 1;
-                      },
-                    );
-                  }
-                },
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                    StadiumBorder(),
-                  ),
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      return Colors.white;
-                    },
-                  ),
-                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      return DISABLED_COLOR;
-                    },
-                  ),
-                ),
+            );
+          } else {
+            //已经到最后一页,显示结束
+            return Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "没有更多了",
+                style: TextStyle(color: Colors.grey),
               ),
+            );
+          }
+        } else if (jobList[i] == JOB_LIST_ERR) {
+          //服务端异常
+          return Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              "服务端异常!",
+              style: TextStyle(color: Colors.grey),
             ),
-          ),
-          Expanded(
-            flex: 13,
-            child: Container(
-              color: Colors.white,
-              child: ListView.separated(
-                separatorBuilder: (c, i) {
-                  return Container(
-                    color: DISABLED_COLOR,
-                    height: 0.1,
-                  );
-                },
-                padding: EdgeInsets.only(top: 0),
-                itemCount: jobList.length,
-                itemBuilder: (BuildContext c, int i) {
-                  //如果到了表尾
-                  if (jobList[i] == JOB_LIST_END) {
-                    //不到最后一页,继续获取数据
-                    bool nextSuccess = nextPage();
-                    if (nextSuccess) {
-                      //加载时显示loading
-                      return Container(
-                        padding: EdgeInsets.all(16.0),
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 24.0,
-                          height: 24.0,
-                          child: CircularProgressIndicator(strokeWidth: 2.0),
-                        ),
-                      );
-                    } else {
-                      //已经到最后一页,显示结束
-                      return Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          "没有更多了",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      );
-                    }
-                  } else if (jobList[i] == JOB_LIST_ERR) {
-                    //服务端异常
-                    return Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        "服务端异常!",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    );
-                  }
-                  return JobInfoPage(
-                    jobInfo: jobList[i],
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+          );
+        }
+        return JobLineWidget(
+          jobInfo: jobList[i],
+        );
+      },
     );
+  }
+
+  @override //下文会详细介绍。
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    //父或祖先widget中的InheritedWidget改变(updateShouldNotify返回true)时会被调用。
+    //如果build中没有依赖InheritedWidget，则此回调不会被调用。
+    setState(() {
+      _searchText = JobListSearch.of(context)!.searchText;
+      jobList.clear();
+      jobList.add(JOB_LIST_END);
+      jobPage = 1;
+      jobMaxPage = 1;
+    });
+    print("Dependencies change");
   }
 
   bool nextPage() {
@@ -199,15 +127,15 @@ class _JobListPageState extends State<JobListPage> {
             },
           );
         }
-      }, search: searchText, pageSize: jobPageSize, page: jobPage);
+      }, search: _searchText, pageSize: jobPageSize, page: jobPage);
       return true;
     } else
       return false;
   }
 }
 
-class JobInfoPage extends StatelessWidget {
-  const JobInfoPage({
+class JobLineWidget extends StatelessWidget {
+  const JobLineWidget({
     Key? key,
     required this.jobInfo,
   });
@@ -331,5 +259,22 @@ class JobInfoPage extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class JobListSearch extends InheritedWidget {
+  JobListSearch({Key? key, required this.searchText, required Widget child})
+      : super(key: key, child: child);
+
+  final searchText;
+  //定义一个便捷方法，方便子树中的widget获取共享数据
+  static JobListSearch? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<JobListSearch>();
+  }
+
+  //该回调决定当data发生变化时，是否通知子树中依赖data的Widget重新build
+  @override
+  bool updateShouldNotify(JobListSearch old) {
+    return old.searchText != searchText;
   }
 }
