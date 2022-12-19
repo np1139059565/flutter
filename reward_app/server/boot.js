@@ -63,9 +63,9 @@ function handService(request, response) {
   try {
     handMethod = require("./services/" + request.url.substr(1).split("?")[0]);
   } catch (e) {
-    console.info("  boot not find service..", e);
-    writo(response, 404, "Server is not find!");
-    return;
+    const msg = '  not find serivces..';
+    console.info(msg, e);
+    return writo(response, 404, msg);
   }
   var conter;
   switch (request.method) {
@@ -81,14 +81,15 @@ function handService(request, response) {
 
 http.createServer(function (request, response) {
   try {
-    console.info("  boot listen is", request.url, request.method);
+    console.info("  boot listen..", request.url, request.method);
     response.writo = (code, conter) => writo(response, code, conter);
     let handFileBool = handFile(request, response);
     if (!handFileBool) {
       handService(request, response);
     }
   } catch (e) {
-    console.error("  boot is err", e);
-    writo(response, 500, "Server is err!");
+    const msg = '  Server is err!'
+    console.error(msg, e);
+    writo(response, 500, msg);
   }
 }).listen(8888);

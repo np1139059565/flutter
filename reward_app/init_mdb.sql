@@ -30,8 +30,19 @@ create table all_job(
     job_tip char(100) not null default '',
     steps varchar(4000));
 
+drop table if exists order_job;
+create table order_job(
+    job_id int,
+    uid int);
+
+drop table if exists publishing_job;
+create table publishing_job(
+    job_id int,
+    uid int);
+
 /**********************insert*****************************/
 insert into all_user(user,pwd) values('admin','0192023a7bbd73250516f069df18b500');/*admin,admin123*/
+
 insert into all_job values(
 	0,
     1,
@@ -162,3 +173,14 @@ insert into all_job(uid,
     success_ratio,
     job_tip,
     steps) select uid,title,money,job_type,system_type,avg_used_seconds,max_used_seconds,success_count,total_count,avg_check_seconds,max_check_seconds,success_ratio,job_tip,steps from all_job;
+
+insert into order_job select id,uid from all_job where id%5=0;
+
+insert into publishing_job select id,uid from all_job where id%4=0;
+
+
+
+
+
+
+

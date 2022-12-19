@@ -23,8 +23,11 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
         ),
         actions: [
-          Icon(
+          Container(
+            margin: EdgeInsets.only(right: 15),
+            child: Icon(
             Icons.more_horiz,
+          ),
           ),
         ],
       ),
@@ -281,9 +284,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   child: Row(
                     children: [
                       Text(
-                        '''剩余名额:${widget.jobInfo["total_count"] - widget.jobInfo["success_count"]}
-                         做单时间:${(widget.jobInfo["max_used_seconds"]/ 60).toStringAsFixed(2)}分钟
-                          审核时间:${(widget.jobInfo["max_check_seconds"]/ 60).toStringAsFixed(2)}分钟''',
+                        '''剩余名额:${widget.jobInfo["total_count"] - widget.jobInfo["success_count"]}  做单时间:${(widget.jobInfo["max_used_seconds"] / 60).toStringAsFixed(2)}分钟  审核时间:${(widget.jobInfo["max_check_seconds"] / 60).toStringAsFixed(2)}分钟''',
                         style: TextStyle(
                           color: DISABLED_COLOR,
                         ),
@@ -340,11 +341,10 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   margin: EdgeInsets.only(
                     top: 10,
                   ),
-                  child: StepWidget.getList(
-                    "任务步骤",
-                    "请参照以下步骤完成做单",
-                    widget.jobInfo,
-                    context: context
+                  child: StepWidget(
+                    title: "任务步骤",
+                    titleTip: "请参照以下步骤完成做单",
+                    jobInfo: widget.jobInfo,
                   ),
                 ),
               ],

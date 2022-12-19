@@ -7,8 +7,23 @@ import 'package:reward_app/common/my_service.dart';
 import 'package:flutter/services.dart';
 import 'package:reward_app/common/my_log.dart';
 
-class StepWidget {
-  static Widget getList(title, titleTip, jobInfo, {BuildContext? context}) {
+class StepWidget extends StatefulWidget {
+  const StepWidget(
+      {super.key,
+      required this.title,
+      required this.titleTip,
+      required this.jobInfo});
+  final title;
+  final titleTip;
+  final jobInfo;
+
+  @override
+  State<StepWidget> createState() => _StepWidgetState();
+}
+
+class _StepWidgetState extends State<StepWidget> {
+  @override
+  Widget build(BuildContext context) {
     final List<Widget> columnChildrenArr = [
       Row(
         children: [
@@ -17,10 +32,10 @@ class StepWidget {
               fontSize: TITLE_SIZE,
             ),
             TextSpan(
-              text: title,
+              text: widget.title,
               children: [
                 TextSpan(
-                  text: " ($titleTip)",
+                  text: " (${widget.titleTip})",
                   style: TextStyle(
                     color: DISABLED_COLOR,
                   ),
@@ -33,49 +48,49 @@ class StepWidget {
     ];
     try {
       final stepArr = json.decode(
-        jobInfo["steps"],
+        widget.jobInfo["steps"],
       );
       for (var i = 0; i < stepArr.length; i++) {
         columnChildrenArr.add(
           Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Center(
-                    child: Text(
-                      "${i + 1}",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  width: TITLE_SIZE,
-                  height: TITLE_SIZE,
-                  margin: EdgeInsets.only(
-                    right: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(
-                        TITLE_SIZE,
-                      ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Center(
+                  child: Text(
+                    "${i + 1}",
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        stepArr[i]["title"],
-                      ),
-                      StepWidget.getDom(stepArr[i],context:context),
-                    ],
+                width: TITLE_SIZE,
+                height: TITLE_SIZE,
+                margin: EdgeInsets.only(
+                  right: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(
+                      TITLE_SIZE,
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stepArr[i]["title"],
+                    ),
+                    getStep(stepArr[i], context: context),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       }
     } catch (e) {
@@ -86,7 +101,7 @@ class StepWidget {
     );
   }
 
-  static Widget getDom(stepInfo, {BuildContext? context}) {
+  Widget getStep(stepInfo, {BuildContext? context}) {
     switch (stepInfo["type"]) {
       case "image":
         return Flex(
@@ -126,14 +141,12 @@ class StepWidget {
                 text: stepInfo["value"],
               ),
             );
-            if (context!=null) {
-              ScaffoldMessenger.of(context!).showSnackBar(
-                SnackBar(
-                  content: Text("已复制"),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
+            ScaffoldMessenger.of(context!).showSnackBar(
+              SnackBar(
+                content: Text("已复制"),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           },
         );
       case "input":

@@ -142,10 +142,15 @@ class _UserPageState extends State<UserPage> {
           child: Container(
             child: SingleChildScrollView(
               child: Container(
+                decoration: BoxDecoration(
+                  color: BACK_COLOR,
+                  borderRadius: BorderRadius.circular(
+                    30,
+                  ),
+                ),
                 padding: EdgeInsets.all(
                   10,
                 ),
-                color: BACK_COLOR,
                 alignment: Alignment.topLeft,
                 child: Column(
                   children: [
