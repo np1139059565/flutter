@@ -53,12 +53,12 @@ insert into all_job values(
     1.34,
     '浏览|外卖省优',
     '安卓 苹果',
-	3600,
-    180,
+	round(rand()*3600,0),
+    round(rand()*180,0),
     154,
     186,
-    25,
-	1800,
+    round(rand()*60,0),
+	round(rand()*1800,0),
     49.00,
     '限首次领取即可!',
     '[{"title":"微信扫码入群,进入 群公告 点击链接领取!","type":"image","value":"/title.png"},{"title":"这种不合格,不要提交","type":"copy","value":"https://www.baidu.com"},{"title":"领取之前必须和此图一样!","type":"input","value":""}]');
@@ -177,13 +177,14 @@ insert into all_job(uid,
     job_tip,
     steps) select uid,title,money,job_type,system_type,avg_used_seconds,max_used_seconds,success_count,total_count,avg_check_seconds,max_check_seconds,success_ratio,job_tip,steps from all_job;
 
+-- 日期加减 https://blog.csdn.net/qq_46416934/article/details/124004542
 insert into order_job select id,uid,
 case when (id+uid)%3=0 then '未提交'
  when (id+uid)%4=0 then '审核中'
  when (id+uid)%5=0 then '已通过'
- else '未通过' end as job_status,now() as order_time from all_job where id%5=0;
+ else '未通过' end as job_status,date_add(now(),interval round(rand()*10,0) minute) as order_time from all_job where id%5=0;
 
-insert into publishing_job select id,uid,now() as publishing_time from all_job where id%4=0;
+insert into publishing_job select id,uid,date_add(now(),interval round(rand()*10,0) minute) as publishing_time from all_job where id%4=0;
 
 
 
