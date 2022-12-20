@@ -34,7 +34,7 @@ drop table if exists order_job;
 create table order_job(
     job_id int,
     uid int,
-    job_stats char(3));
+    job_status char(3));
 
 drop table if exists publishing_job;
 create table publishing_job(
@@ -179,7 +179,7 @@ insert into order_job select id,uid,
 case when (id+uid)%3=0 then '未提交'
  when (id+uid)%4=0 then '审核中'
  when (id+uid)%5=0 then '已通过'
- else '未通过' end as job_stats from all_job where id%5=0;
+ else '未通过' end as job_status from all_job where id%5=0;
 
 insert into publishing_job select id,uid from all_job where id%4=0;
 
