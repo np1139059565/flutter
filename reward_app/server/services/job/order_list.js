@@ -31,8 +31,8 @@ function _get(request, response) {
     }
     const minIndex = (params.page - 1) * params.page_size;
     const maxIndex = params.page * params.page_size;
-    const sql1 = "SELECT B.* FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid + " AND B.job_status in ('" + params.status + "') LIMIT " + minIndex + "," + maxIndex + ";";
-    const sql2 = "SELECT COUNT(1) FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid + " AND B.job_status in ('" + params.status + "');";
+    const sql1 = "SELECT B.* FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid + " AND A.job_status in ('" + params.status + "') LIMIT " + minIndex + "," + maxIndex + ";";
+    const sql2 = "SELECT COUNT(1) FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid + " AND A.job_status in ('" + params.status + "');";
     const sql3 = "SELECT SLEEP(1);";
     mdb.query(sql1 + sql2 + sql3, (e, r, f) => {
         if (e) {
