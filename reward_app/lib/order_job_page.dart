@@ -17,7 +17,7 @@ class _OrderJobPageState extends State<OrderJobPage> {
       "                                                                                                                                                  ";
   final SEARCH_HINT_TEXT = "任务标题";
 
-  String _status_index = '0';
+  String _status_index = '-1';
 
   @override
   Widget build(BuildContext c) {
