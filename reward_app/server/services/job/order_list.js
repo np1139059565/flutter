@@ -22,7 +22,8 @@ function _get(request, response) {
     let orderTimeGeo=''
     if (params.status < statusArr.length && params.status >= 0) {
         params.status = statusArr[params.status];
-        orderTimeGeo='AND now()-A.order_time<B.max_used_seconds'
+        //时间直接相减是有问题的,需要转成整数https://www.cnblogs.com/zhenxing/p/16355843.html
+        orderTimeGeo='AND UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(A.order_time)<B.max_used_seconds'
     } else {
         params.status = statusArr.join('\',\'');
     }
