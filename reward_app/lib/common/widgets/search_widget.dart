@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 
-import 'common/def_style.dart';
+import '../def_style.dart';
 
-class SearchPage extends StatefulWidget {
-  const SearchPage(
-      {super.key, required this.defSearchText, required this.hintText});
+class SearchWidget extends StatefulWidget {
+  const SearchWidget(
+      {super.key, required this.searchText, required this.hintText});
 
-  final String defSearchText;
+  final String searchText;
   final String hintText;
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  State<SearchWidget> createState() => _SearchWidgetState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchWidgetState extends State<SearchWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
           controller: TextEditingController.fromValue(TextEditingValue(
-              text: widget.defSearchText,
+              text: widget.searchText,
               selection: TextSelection.fromPosition(TextPosition(
                   affinity: TextAffinity.downstream,
-                  offset: widget.defSearchText.length)))),
+                  offset: widget.searchText.length)))),
           autofocus: true,
           decoration: InputDecoration(
             prefixIcon: Icon(

@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 
 import 'common/def_style.dart';
-import 'search_page.dart';
-import 'job_list_page.dart';
-import 'common/my_log.dart';
+import 'common/widgets/search_widget.dart';
+import 'common/widgets/job_list_widget.dart';
+import 'common/utils/my_log_utils.dart';
+import 'common/utils/my_service_utils.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class AllJobPage extends StatefulWidget {
+  const AllJobPage({super.key});
   static dynamic getAppBar() {
     return null;
   }
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<AllJobPage> createState() => _AllJobPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AllJobPageState extends State<AllJobPage> {
   final SEARCH_RIGHT_WIDTH_MAX =
       "                                                                                                                                                  ";
   final SEARCH_HINT_TEXT = "任务标题";
@@ -53,14 +54,14 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return SearchPage(
-                            defSearchText: _searchText,
+                          return SearchWidget(
+                            searchText: _searchText,
                             hintText: SEARCH_HINT_TEXT,
                           );
                         },
                       ),
                     );
-                    MyLog.inf("search text:$inputStr");
+                    MyLogUtils.inf("search text:$inputStr");
                     if (inputStr != null) {
                       setState(
                         () {
@@ -92,8 +93,11 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 color: Colors.white,
                 child: JobListSearch(
-                  searchText: _searchText,
-                  child: JobListPage(),
+                  uri: MyServiceUtils.allJobListUri,
+                  params: {
+                    'search':_searchText,
+                  },
+                  child: JobListWidget(),
                 ),
               ),
             ),

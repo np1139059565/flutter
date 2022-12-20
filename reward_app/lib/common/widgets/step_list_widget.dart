@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:image_pickers/image_pickers.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 
-import 'package:reward_app/common/def_style.dart';
-import 'package:reward_app/common/my_service.dart';
-import 'package:flutter/services.dart';
-import 'package:reward_app/common/my_log.dart';
+import '../def_style.dart';
+import '../utils/my_service_utils.dart';
+import '../utils/my_log_utils.dart';
 
-class StepWidget extends StatefulWidget {
-  const StepWidget(
+class StepListWidget extends StatefulWidget {
+  const StepListWidget(
       {super.key,
       required this.title,
       required this.titleTip,
@@ -18,10 +18,10 @@ class StepWidget extends StatefulWidget {
   final jobInfo;
 
   @override
-  State<StepWidget> createState() => _StepWidgetState();
+  State<StepListWidget> createState() => _StepListWidgetState();
 }
 
-class _StepWidgetState extends State<StepWidget> {
+class _StepListWidgetState extends State<StepListWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> columnChildrenArr = [
@@ -94,7 +94,7 @@ class _StepWidgetState extends State<StepWidget> {
         );
       }
     } catch (e) {
-      MyLog.err(e);
+      MyLogUtils.err(e);
     }
     return Column(
       children: columnChildrenArr,
@@ -109,7 +109,7 @@ class _StepWidgetState extends State<StepWidget> {
           children: [
             Expanded(
               child: Image.network(
-                "${MyService.parentUrl}/images/${stepInfo["value"]}",
+                "${MyServiceUtils.parentUrl}/images/${stepInfo["value"]}",
                 color: DEF_COLOR,
                 width: 360,
               ),

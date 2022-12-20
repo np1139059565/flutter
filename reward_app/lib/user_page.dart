@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
-import 'common/my_log.dart';
 import 'common/def_style.dart';
-import 'common/my_service.dart';
-import 'common/my_file.dart';
+import 'common/utils/my_log_utils.dart';
+import 'common/utils/my_service_utils.dart';
+import 'common/utils/my_file_utils.dart';
+import './order_job_page.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -29,8 +30,8 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   String _this_user = '';
   bool checkLogin() {
-    final users = MyFile.list(path: widget.USER_DIR);
-    MyLog.inf('check login $users..');
+    final users = MyFileUtils.list(path: widget.USER_DIR);
+    MyLogUtils.inf('check login $users..');
     if (users.length > 0) {
       setState(() {
         _this_user = users.first.split('/').last;
@@ -40,20 +41,20 @@ class _UserPageState extends State<UserPage> {
   }
 
   void login(uid, user, pwd) {
-    MyService.getAsync(MyService.sessionUri, (e, session) {
+    MyServiceUtils.getAsync(MyServiceUtils.sessionUri, (e, session) {
       if (session == null) {
-        MyLog.inf('not find session..');
+        MyLogUtils.inf('not find session..');
         return;
       }
       final encode =
           md5.convert(new Utf8Encoder().convert('$uid:$user:$pwd:$session'));
-      MyService.getAsync(
-        MyService.loginUri,
+      MyServiceUtils.getAsync(
+        MyServiceUtils.loginUri,
         (e, body) {
-          MyLog.inf('$uid:$user:$pwd:$session>$encode');
+          MyLogUtils.inf('$uid:$user:$pwd:$session>$encode');
           if (body != null) {
-            MyLog.inf('$user login is success');
-            MyFile.createDir('${widget.USER_DIR}/$user');
+            MyLogUtils.inf('$user login is success');
+            MyFileUtils.createDir('${widget.USER_DIR}/$user');
             setState(() {
               _this_user = user;
             });
@@ -69,7 +70,7 @@ class _UserPageState extends State<UserPage> {
 
   @override
   void initState() {
-    MyFile.initAsync(callback: checkLogin);
+    MyFileUtils.initAsync(callback: checkLogin);
   }
 
   @override
@@ -104,7 +105,7 @@ class _UserPageState extends State<UserPage> {
                           ? null
                           : DecorationImage(
                               image: NetworkImage(
-                                "${MyService.parentUrl}/images/title.png",
+                                "${MyServiceUtils.parentUrl}/images/title.png",
                                 // color: Colors.blue,
                               ),
                               fit: BoxFit.cover,
@@ -126,7 +127,7 @@ class _UserPageState extends State<UserPage> {
                       setState(() {
                         _this_user = '';
                       });
-                      MyFile.deleteDir('${widget.USER_DIR}/$_this_user');
+                      MyFileUtils.deleteDir('${widget.USER_DIR}/$_this_user');
                     }
                   },
                   style: ButtonStyle(
@@ -285,33 +286,45 @@ class _UserPageState extends State<UserPage> {
                             ),
                           ),
                           Expanded(
-                            child: Container(
-                              width: 100,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 60,
-                                    height: 60,
-                                    child: Icon(
-                                      Icons.assignment_turned_in,
-                                      size: 30,
-                                      color: Colors.white,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.cyan,
-                                      borderRadius: BorderRadius.circular(
-                                        30,
+                            child: GestureDetector(
+                              child: Container(
+                                width: 100,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: 60,
+                                      height: 60,
+                                      child: Icon(
+                                        Icons.assignment_turned_in,
+                                        size: 30,
+                                        color: Colors.white,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.cyan,
+                                        borderRadius: BorderRadius.circular(
+                                          30,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    "我的接单",
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
+                                    Text(
+                                      "我的接单",
+                                      style: TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return OrderJobPage();
+                                    },
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           Expanded(

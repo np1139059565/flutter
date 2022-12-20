@@ -1,14 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:reward_app/common/my_log.dart';
 
-class MyService {
+import '../utils/my_log_utils.dart';
+
+class MyServiceUtils {
   static final Dio dio = Dio();
   // final HttpClient hc = HttpClient();
   static final _SCHEME = "http";
   static final _HOST = "192.168.1.32";
   static final _PORT = 8888;
 
-  static final jobListUri='/job/list';
+  static final allJobListUri='/job/list';
+    static final orderJobListUri='/job/order_list';
   static final sessionUri='/user/session';
   static final loginUri='/user/login';
 
@@ -29,7 +31,7 @@ class MyService {
           await dio.get(path = "$parentUrl/$path", queryParameters: queryParameters);
       respBody = resp.data;
     } catch (e) {
-      MyLog.err(e);
+      MyLogUtils.err(e);
       err = e;
     } finally {
       // hc.close();
@@ -52,7 +54,7 @@ class MyService {
   static void getJobListAsync(callback,
       {int page = 1, int pageSize = 1, String search = ""}) {
     return getAsync(
-      jobListUri,
+      allJobListUri,
       callback,
       queryParameters:{
         "page": page.toString(),

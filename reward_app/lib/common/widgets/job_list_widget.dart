@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 
-import 'common/def_style.dart';
-import 'job_detail_page.dart';
-import 'common/my_service.dart';
-import 'common/my_log.dart';
+import '../def_style.dart';
+import '../../job_detail_page.dart';
+import '../utils/my_service_utils.dart';
+import '../utils/my_log_utils.dart';
 
-class JobListPage extends StatefulWidget {
-  const JobListPage({super.key});
+class JobListWidget extends StatefulWidget {
+  const JobListWidget({super.key});
 
   @override
-  State<JobListPage> createState() => _JobListPageState();
+  State<JobListWidget> createState() => _JobListWidgetState();
 }
 
-class _JobListPageState extends State<JobListPage> {
+class _JobListWidgetState extends State<JobListWidget> {
   static String JOB_LIST_ERR = "###err###";
   static String JOB_LIST_END = "###end###";
 
   final jobList = <dynamic>[JOB_LIST_END];
-  int jobPageSize = 8;
-  int jobPage = 1;
-  int jobMaxPage = 1;
-  String _searchText = '';
+  // int  = 8;
+  // int jobPage = 1;
+  // int jobMaxPage = 1;
+  // String _searchText = '';
+  final Map<String, String> _defParams = {
+    'jobPage':'1',
+    'jobMaxPage':'1',
+    'jobPageSize':'8',
+    'search':'',
+  };
 
   @override
   void initState() {
@@ -28,7 +34,7 @@ class _JobListPageState extends State<JobListPage> {
 
     // prefs = await SharedPreferences.getInstance();
     // prefs.setStringList("jobList",List());
-    MyLog.inf("initState...");
+    MyLogUtils.inf("initState...");
   }
 
   @override
@@ -93,18 +99,18 @@ class _JobListPageState extends State<JobListPage> {
     //父或祖先widget中的InheritedWidget改变(updateShouldNotify返回true)时会被调用。
     //如果build中没有依赖InheritedWidget，则此回调不会被调用。
     setState(() {
-      _searchText = JobListSearch.of(context)!.searchText;
+      _defParams.addAll(JobListSearch.of(context)!.params);
+      _defParams['jobPage'] = '1';
+      _defParams['jobMaxPage'] = '1';
       jobList.clear();
       jobList.add(JOB_LIST_END);
-      jobPage = 1;
-      jobMaxPage = 1;
     });
     print("Dependencies change");
   }
 
   bool nextPage() {
-    if (jobPage <= jobMaxPage) {
-      MyService.getJobListAsync((e, d) {
+    if (int.parse(_defParams['jobPage']!) <=int.parse(_defParams['jobMaxPage']!)) {
+      MyServiceUtils.getAsync(JobListSearch.of(context)!.uri, (e, d) {
         if (e != null) {
           setState(
             () {
@@ -112,12 +118,13 @@ class _JobListPageState extends State<JobListPage> {
               jobList.add(JOB_LIST_ERR);
             },
           );
-          return MyLog.err(e);
+          return MyLogUtils.err(e);
         }
 
-        jobPage += 1;
-        jobMaxPage = d["maxPage"];
+        _defParams['jobPage'] = (int.parse(_defParams['jobPage']!)+1).toString();
+        _defParams['jobMaxPage'] = d["maxPage"];
         dynamic newLine = d["data"];
+        MyLogUtils.inf('job list ${_defParams['jobPage']} ${_defParams['jobMaxPage']}');
         if (mounted) {
           setState(
             () {
@@ -127,7 +134,7 @@ class _JobListPageState extends State<JobListPage> {
             },
           );
         }
-      }, search: _searchText, pageSize: jobPageSize, page: jobPage);
+      }, queryParameters: _defParams);
       return true;
     } else
       return false;
@@ -154,7 +161,7 @@ class JobLineWidget extends StatelessWidget {
             Expanded(
               flex: 6,
               child: Image.network(
-                "${MyService.parentUrl}/images/title.png",
+                "${MyServiceUtils.parentUrl}/images/title.png",
                 width: 80,
                 color: DEF_COLOR,
               ),
@@ -263,10 +270,14 @@ class JobLineWidget extends StatelessWidget {
 }
 
 class JobListSearch extends InheritedWidget {
-  JobListSearch({Key? key, required this.searchText, required Widget child})
+  JobListSearch(
+      {Key? key,
+      required this.uri,
+      required this.params,
+      required Widget child})
       : super(key: key, child: child);
-
-  final searchText;
+  final uri;
+  final Map<String, String> params;
   //定义一个便捷方法，方便子树中的widget获取共享数据
   static JobListSearch? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<JobListSearch>();
@@ -275,6 +286,9 @@ class JobListSearch extends InheritedWidget {
   //该回调决定当data发生变化时，是否通知子树中依赖data的Widget重新build
   @override
   bool updateShouldNotify(JobListSearch old) {
-    return old.searchText != searchText;
+    // return old.params.values.any((v1) => params.values.any((v2) => v1 != v2));
+    // return old.params.values.where((v) => v != '1').length == 0;
+    return old.params.values
+        .every((v1) => params.values.every((v2) => v1 != v2));
   }
 }

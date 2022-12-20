@@ -33,7 +33,8 @@ create table all_job(
 drop table if exists order_job;
 create table order_job(
     job_id int,
-    uid int);
+    uid int,
+    job_stats char(3));
 
 drop table if exists publishing_job;
 create table publishing_job(
@@ -174,7 +175,11 @@ insert into all_job(uid,
     job_tip,
     steps) select uid,title,money,job_type,system_type,avg_used_seconds,max_used_seconds,success_count,total_count,avg_check_seconds,max_check_seconds,success_ratio,job_tip,steps from all_job;
 
-insert into order_job select id,uid from all_job where id%5=0;
+insert into order_job select id,uid,
+case when (id+uid)%3=0 then '未提交'
+ when (id+uid)%4=0 then '审核中'
+ when (id+uid)%5=0 then '已通过'
+ else '未通过' end as job_stats from all_job where id%5=0;
 
 insert into publishing_job select id,uid from all_job where id%4=0;
 

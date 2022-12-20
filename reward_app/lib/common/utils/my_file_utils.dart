@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-import 'my_log.dart';
+import 'my_log_utils.dart';
 
-class MyFile {
+class MyFileUtils {
   static String _PARENT_PATH = '';
 
   static void initAsync({Function()? callback}) {
     _getAbsolutePathAsync().then((value) {
-      MyLog.inf("init my file $value..");
+      MyLogUtils.inf("init my file $value..");
       _PARENT_PATH = value;
       if (callback != null) {
         callback();
@@ -25,7 +25,7 @@ class MyFile {
 
   static String getAbsolutePath({String? path = ''}) {
     if (_PARENT_PATH == '') {
-      MyLog.err(Exception('my file is not init!'));
+      MyLogUtils.err(Exception('my file is not init!'));
     }
     return '$_PARENT_PATH${path!.isEmpty ? '' : '/$path'}';
   }
@@ -33,7 +33,7 @@ class MyFile {
   static File getFile({String? path = '', bool? checkExists = true}) {
     final file = File(getAbsolutePath(path: path));
     if (checkExists! && file.existsSync() != true) {
-      MyLog.err(Exception('file ${file.path} is not find!'));
+      MyLogUtils.err(Exception('file ${file.path} is not find!'));
     }
     return file;
   }
@@ -41,7 +41,7 @@ class MyFile {
   static Directory getDir({String? path = '', bool? checkExists = true}) {
     final dir = Directory(getAbsolutePath(path: path));
     if (checkExists! && dir.existsSync() != true) {
-      MyLog.err(Exception('dir ${dir.path} is not find!'));
+      MyLogUtils.err(Exception('dir ${dir.path} is not find!'));
     }
     return dir;
   }

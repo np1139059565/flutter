@@ -18,16 +18,19 @@ function _get(request, response) {
     }
     console.info(request.url, params);
 
-    if (sqlAttack.black(params.search)) {
-        msg = 'sql attack!';
+    const statusArr=['未提交', '审核中', '已通过', '未通过'];
+    if (statusArr.indexOf(params.status) < 0) {
+        msg = 'status is not find!';
+    }else if(params.status==''){
+        params.status=statusArr.join('\',\'');
     }
     if (msg != '') {
-        return response.writo(500, 'sql attack!');
+        return response.writo(500, msg);
     }
     const minIndex = (params.page - 1) * params.page_size;
     const maxIndex = params.page * params.page_size;
-    const sql1 = "SELECT B.* FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid="+params.uid+" AND B.title LIKE '%" + params.search + "%' LIMIT " + minIndex + "," + maxIndex + ";";
-    const sql2 = "SELECT COUNT(1) FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid="+params.uid+" AND B.title LIKE '%" + params.search + "%';";
+    const sql1 = "SELECT B.* FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid + " AND B.job_status in ('" + params.status + "') LIMIT " + minIndex + "," + maxIndex + ";";
+    const sql2 = "SELECT COUNT(1) FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid + " AND B.job_status in ('" + params.status + "');";
     const sql3 = "SELECT SLEEP(1);";
     mdb.query(sql1 + sql2 + sql3, (e, r, f) => {
         if (e) {

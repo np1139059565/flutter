@@ -1,4 +1,4 @@
-class MyLog {
+class MyLogUtils {
   static final inf = (str) {
     print("--------------------info:-----------------------");
     print(str);

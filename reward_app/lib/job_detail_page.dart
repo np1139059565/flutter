@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:reward_app/common/def_style.dart';
-import 'package:reward_app/common/my_service.dart';
-import 'package:reward_app/common/step_widget.dart';
+import 'common/def_style.dart';
+import 'common/utils/my_service_utils.dart';
+import 'common/widgets/step_list_widget.dart';
 
 class JobDetailPage extends StatefulWidget {
   const JobDetailPage({super.key, required this.jobInfo});
@@ -49,7 +49,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                       Expanded(
                         flex: 1,
                         child: Image.network(
-                          "${MyService.parentUrl}/images/title.png",
+                          "${MyServiceUtils.parentUrl}/images/title.png",
                           width: 80,
                         ),
                       ),
@@ -341,7 +341,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   margin: EdgeInsets.only(
                     top: 10,
                   ),
-                  child: StepWidget(
+                  child: StepListWidget(
                     title: "任务步骤",
                     titleTip: "请参照以下步骤完成做单",
                     jobInfo: widget.jobInfo,
