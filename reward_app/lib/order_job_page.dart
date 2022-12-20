@@ -67,9 +67,10 @@ class _OrderJobPageState extends State<OrderJobPage> {
                   },
                   child: JobListWidget(
                     parseChild: (jobInfo) {
-                      final expired=DateTime.now().difference(DateTime.parse(jobInfo['order_time'])).inSeconds>int.parse(jobInfo['max_used_seconds']);
+                      final expired=DateTime.now().difference(DateTime.parse(jobInfo['order_time'])).inSeconds<=jobInfo['max_used_seconds'];
+                      MyLogUtils.inf('${DateTime.now().difference(DateTime.parse(jobInfo['order_time'])).inSeconds}');
                       return Text(
-                        expired?"已过期":jobInfo['order_status'],
+                        expired?"已过期":jobInfo['job_status'],
                         textAlign: TextAlign.right,
                         style: TextStyle(color:expired? Colors.red.shade800:Colors.green),
                       );

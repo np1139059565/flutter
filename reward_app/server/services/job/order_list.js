@@ -22,7 +22,7 @@ function _get(request, response) {
     let orderTimeGeo=''
     if (params.status < statusArr.length && params.status >= 0) {
         params.status = statusArr[params.status];
-        orderTimeGeo='AND now()-A.order_time<A.max_used_seconds'
+        orderTimeGeo='AND now()-A.order_time<B.max_used_seconds'
     } else {
         params.status = statusArr.join('\',\'');
     }
