@@ -18,11 +18,11 @@ function _get(request, response) {
     }
     console.info(request.url, params);
 
-    const statusArr=['未提交', '审核中', '已通过', '未通过'];
-    if (params.status<statusArr.length) {
-        params.status=statusArr[params.status];
-    }else{
-        params.status=statusArr.join('\',\'');
+    const statusArr = ['未提交', '审核中', '已通过', '未通过'];
+    if (params.status < statusArr.length && params.status >= 0) {
+        params.status = statusArr[params.status];
+    } else {
+        params.status = statusArr.join('\',\'');
     }
     if (msg != '') {
         return response.writo(500, msg);
