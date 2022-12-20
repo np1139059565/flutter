@@ -22,9 +22,9 @@ class _JobListWidgetState extends State<JobListWidget> {
   // int jobMaxPage = 1;
   // String _searchText = '';
   final Map<String, String> _defParams = {
-    'jobPage':'1',
-    'jobMaxPage':'1',
-    'jobPageSize':'8',
+    'page':'1',
+    'maxPage':'1',
+    'page_size':'8',
     'search':'',
   };
 
@@ -100,8 +100,8 @@ class _JobListWidgetState extends State<JobListWidget> {
     //如果build中没有依赖InheritedWidget，则此回调不会被调用。
     setState(() {
       _defParams.addAll(JobListSearch.of(context)!.params);
-      _defParams['jobPage'] = '1';
-      _defParams['jobMaxPage'] = '1';
+      _defParams['page'] = '1';
+      _defParams['maxPage'] = '1';
       jobList.clear();
       jobList.add(JOB_LIST_END);
     });
@@ -109,7 +109,7 @@ class _JobListWidgetState extends State<JobListWidget> {
   }
 
   bool nextPage() {
-    if (int.parse(_defParams['jobPage']!) <=int.parse(_defParams['jobMaxPage']!)) {
+    if (int.parse(_defParams['page']!) <=int.parse(_defParams['maxPage']!)) {
       MyServiceUtils.getAsync(JobListSearch.of(context)!.uri, (e, d) {
         if (e != null) {
           setState(
@@ -121,10 +121,10 @@ class _JobListWidgetState extends State<JobListWidget> {
           return MyLogUtils.err(e);
         }
 
-        _defParams['jobPage'] = (int.parse(_defParams['jobPage']!)+1).toString();
-        _defParams['jobMaxPage'] = d["maxPage"];
+        _defParams['page'] = (int.parse(_defParams['page']!)+1).toString();
+        _defParams['maxPage'] = d["maxPage"].toString();
         dynamic newLine = d["data"];
-        MyLogUtils.inf('job list ${_defParams['jobPage']} ${_defParams['jobMaxPage']}');
+        MyLogUtils.inf('job list ${_defParams['page']} ${_defParams['maxPage']}');
         if (mounted) {
           setState(
             () {
@@ -286,9 +286,9 @@ class JobListSearch extends InheritedWidget {
   //该回调决定当data发生变化时，是否通知子树中依赖data的Widget重新build
   @override
   bool updateShouldNotify(JobListSearch old) {
-    // return old.params.values.any((v1) => params.values.any((v2) => v1 != v2));
+    // return old.params.keys.every((k) => params[k]!=old.params[k]);//所有元素都为true则返回true
     // return old.params.values.where((v) => v != '1').length == 0;
-    return old.params.values
-        .every((v1) => params.values.every((v2) => v1 != v2));
+    return old.params.keys
+        .any((k) => params[k]!=old.params[k]);//只要有一个元素为true即返回true
   }
 }

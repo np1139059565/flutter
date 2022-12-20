@@ -17,7 +17,7 @@ class _OrderJobPageState extends State<OrderJobPage> {
       "                                                                                                                                                  ";
   final SEARCH_HINT_TEXT = "任务标题";
 
-  String _status = '';
+  String _status_index = '0';
 
   @override
   Widget build(BuildContext c) {
@@ -38,7 +38,7 @@ class _OrderJobPageState extends State<OrderJobPage> {
               child: TabBar(
                 onTap: (i) {
                   setState(() {
-                    _status = tabs[i];
+                    _status_index = (i-1).toString();
                   });
                 },
                 isScrollable: true,
@@ -62,7 +62,7 @@ class _OrderJobPageState extends State<OrderJobPage> {
                 child: JobListSearch(
                   uri: MyServiceUtils.orderJobListUri,
                   params: {
-                    'status': _status,
+                    'status': _status_index,
                     'uid': '1',
                   },
                   child: JobListWidget(),

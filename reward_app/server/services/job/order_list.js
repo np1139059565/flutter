@@ -19,10 +19,12 @@ function _get(request, response) {
     console.info(request.url, params);
 
     const statusArr=['未提交', '审核中', '已通过', '未通过'];
-    if (statusArr.indexOf(params.status) < 0) {
+    if (params.status>statusArr.length) {
         msg = 'status is not find!';
-    }else if(params.status==''){
+    }else if(params.status=='-1'){
         params.status=statusArr.join('\',\'');
+    }else{
+        params.status=statusArr[params.status];
     }
     if (msg != '') {
         return response.writo(500, msg);
