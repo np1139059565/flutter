@@ -182,9 +182,9 @@ insert into order_job select id,uid,
 case when (id+uid)%3=0 then '未提交'
  when (id+uid)%4=0 then '审核中'
  when (id+uid)%5=0 then '已通过'
- else '未通过' end as job_status,date_add(now(),interval round(rand()*10,0) minute) as order_time from all_job where id%5=0;
+ else '未通过' end as job_status,date_add(now(),interval -round(rand()*10,0) minute) as order_time from all_job where id%5=0;
 
-insert into publishing_job select id,uid,date_add(now(),interval round(rand()*10,0) minute) as publishing_time from all_job where id%4=0;
+insert into publishing_job select id,uid,date_add(now(),interval -round(rand()*10,0) minute) as publishing_time from all_job where id%4=0;
 
 
 
