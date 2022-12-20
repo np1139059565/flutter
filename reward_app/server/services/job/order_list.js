@@ -31,7 +31,7 @@ function _get(request, response) {
     }
     const minIndex = (params.page - 1) * params.page_size;
     const maxIndex = params.page * params.page_size;
-    const sql1 = "SELECT B.*,A.* FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid +
+    const sql1 = "SELECT B.*,A.*,DATE_FORMAT(A.order_time,'%y-%m-%d %H:%i:%s') AS order_time FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid +
         " AND A.job_status in ('" + params.status + "') "+orderTimeGeo+" LIMIT " + minIndex + "," + maxIndex + ";";
     const sql2 = "SELECT COUNT(1) FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid +
         " AND A.job_status in ('" + params.status + "') "+orderTimeGeo+";";
