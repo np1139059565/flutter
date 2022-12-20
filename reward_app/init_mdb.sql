@@ -32,14 +32,16 @@ create table all_job(
 
 drop table if exists order_job;
 create table order_job(
-    job_id int,
-    uid int,
-    job_status char(3));
+    job_id int not null,
+    uid int not null,
+    job_status char(3) not null,
+    order_time datetime not null);
 
 drop table if exists publishing_job;
 create table publishing_job(
-    job_id int,
-    uid int);
+    job_id int not null,
+    uid int not null,
+    publishing_time datetime not null);
 
 /**********************insert*****************************/
 insert into all_user(user,pwd) values('admin','0192023a7bbd73250516f069df18b500');/*admin,admin123*/
@@ -179,9 +181,9 @@ insert into order_job select id,uid,
 case when (id+uid)%3=0 then '未提交'
  when (id+uid)%4=0 then '审核中'
  when (id+uid)%5=0 then '已通过'
- else '未通过' end as job_status from all_job where id%5=0;
+ else '未通过' end as job_status,now() as order_time from all_job where id%5=0;
 
-insert into publishing_job select id,uid from all_job where id%4=0;
+insert into publishing_job select id,uid,now() as publishing_time from all_job where id%4=0;
 
 
 

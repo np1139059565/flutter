@@ -6,7 +6,9 @@ import '../utils/my_service_utils.dart';
 import '../utils/my_log_utils.dart';
 
 class JobListWidget extends StatefulWidget {
-  const JobListWidget({super.key});
+  const JobListWidget({super.key, this.parseChild});
+
+  final Function? parseChild;
 
   @override
   State<JobListWidget> createState() => _JobListWidgetState();
@@ -22,10 +24,10 @@ class _JobListWidgetState extends State<JobListWidget> {
   // int jobMaxPage = 1;
   // String _searchText = '';
   final Map<String, String> _defParams = {
-    'page':'1',
-    'maxPage':'1',
-    'page_size':'8',
-    'search':'',
+    'page': '1',
+    'maxPage': '1',
+    'page_size': '8',
+    'search': '',
   };
 
   @override
@@ -87,8 +89,7 @@ class _JobListWidgetState extends State<JobListWidget> {
           );
         }
         return JobLineWidget(
-          jobInfo: jobList[i],
-        );
+            jobInfo: jobList[i], parseChild: widget.parseChild);
       },
     );
   }
@@ -109,7 +110,7 @@ class _JobListWidgetState extends State<JobListWidget> {
   }
 
   bool nextPage() {
-    if (int.parse(_defParams['page']!) <=int.parse(_defParams['maxPage']!)) {
+    if (int.parse(_defParams['page']!) <= int.parse(_defParams['maxPage']!)) {
       MyServiceUtils.getAsync(JobListSearch.of(context)!.uri, (e, d) {
         if (e != null) {
           setState(
@@ -121,10 +122,11 @@ class _JobListWidgetState extends State<JobListWidget> {
           return MyLogUtils.err(e);
         }
 
-        _defParams['page'] = (int.parse(_defParams['page']!)+1).toString();
+        _defParams['page'] = (int.parse(_defParams['page']!) + 1).toString();
         _defParams['maxPage'] = d["maxPage"].toString();
         dynamic newLine = d["data"];
-        MyLogUtils.inf('job list ${_defParams['page']} ${_defParams['maxPage']}');
+        MyLogUtils.inf(
+            'job list ${_defParams['page']} ${_defParams['maxPage']}');
         if (mounted) {
           setState(
             () {
@@ -142,12 +144,10 @@ class _JobListWidgetState extends State<JobListWidget> {
 }
 
 class JobLineWidget extends StatelessWidget {
-  const JobLineWidget({
-    Key? key,
-    required this.jobInfo,
-  });
+  const JobLineWidget({Key? key, required this.jobInfo, this.parseChild});
 
   final jobInfo;
+  final Function? parseChild;
 
   @override
   Widget build(BuildContext context) {
@@ -239,11 +239,13 @@ class JobLineWidget extends StatelessWidget {
                             ),
                           ),
                           Expanded(
-                            child: Text(
-                              "支持设备:${jobInfo["system_type"]}",
-                              textAlign: TextAlign.right,
-                              style: TextStyle(color: DISABLED_COLOR),
-                            ),
+                            child: parseChild != null
+                                ? parseChild!(jobInfo)
+                                : Text(
+                                    "支持设备:${jobInfo["system_type"]}",
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(color: DISABLED_COLOR),
+                                  ),
                           ),
                         ],
                       ),
@@ -289,6 +291,6 @@ class JobListSearch extends InheritedWidget {
     // return old.params.keys.every((k) => params[k]!=old.params[k]);//所有元素都为true则返回true
     // return old.params.values.where((v) => v != '1').length == 0;
     return old.params.keys
-        .any((k) => params[k]!=old.params[k]);//只要有一个元素为true即返回true
+        .any((k) => params[k] != old.params[k]); //只要有一个元素为true即返回true
   }
 }

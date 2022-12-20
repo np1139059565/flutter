@@ -38,7 +38,7 @@ class _OrderJobPageState extends State<OrderJobPage> {
               child: TabBar(
                 onTap: (i) {
                   setState(() {
-                    _status_index = (i-1).toString();
+                    _status_index = (i - 1).toString();
                   });
                 },
                 isScrollable: true,
@@ -65,7 +65,16 @@ class _OrderJobPageState extends State<OrderJobPage> {
                     'status': _status_index,
                     'uid': '1',
                   },
-                  child: JobListWidget(),
+                  child: JobListWidget(
+                    parseChild: (jobInfo) {
+                      final expired=DateTime.now().difference(DateTime.parse(jobInfo['order_time'])).inSeconds>int.parse(jobInfo['max_used_seconds']);
+                      return Text(
+                        expired?"已过期":jobInfo['order_status'],
+                        textAlign: TextAlign.right,
+                        style: TextStyle(color:expired? Colors.red.shade800:Colors.green),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
