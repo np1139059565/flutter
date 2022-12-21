@@ -19,12 +19,12 @@ function _get(request, response) {
     console.info(request.url, params);
 
     const statusArr = ['未提交', '审核中', '已通过', '未通过'];
-    let orderTimeGeo='';
-    const thisUseSecondsGeo='UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(A.order_time)';
+    let timeFilter = '';
+    const useTimeOrder = 'UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(A.order_time)';
     if (params.status < statusArr.length && params.status >= 0) {
+        timeFilter = statusArr.indexOf(params.status) != statusArr.indexOf('已通过') ? 'AND ' + useTimeOrder + '<B.max_used_seconds' : '';
         params.status = statusArr[params.status];
         //时间直接相减是有问题的,需要转成整数https://www.cnblogs.com/zhenxing/p/16355843.html
-        orderTimeGeo='AND '+thisUseSecondsGeo+'<B.max_used_seconds';
     } else {
         params.status = statusArr.join('\',\'');
     }
@@ -34,10 +34,10 @@ function _get(request, response) {
     const minIndex = (params.page - 1) * params.page_size;
     const maxIndex = params.page * params.page_size;
     const sql1 = "SELECT B.*,A.*,DATE_FORMAT(A.order_time,'%Y-%m-%d %H:%i:%s') AS order_time FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid +
-        " AND A.job_status in ('" + params.status + "') "+orderTimeGeo+
-        " ORDER BY "+thisUseSecondsGeo+" DESC LIMIT " + minIndex + "," + maxIndex + ";";
+        " AND A.job_status in ('" + params.status + "') " + timeFilter +
+        " ORDER BY " + useTimeOrder + " DESC LIMIT " + minIndex + "," + maxIndex + ";";
     const sql2 = "SELECT COUNT(1) FROM order_job A LEFT JOIN all_job B on A.job_id=B.id WHERE B.uid=" + params.uid +
-        " AND A.job_status in ('" + params.status + "') "+orderTimeGeo+";";
+        " AND A.job_status in ('" + params.status + "') " + timeFilter + ";";
     const sql3 = "SELECT SLEEP(1);";
     mdb.query(sql1 + sql2 + sql3, (e, r, f) => {
         if (e) {
