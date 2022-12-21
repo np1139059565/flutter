@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
 
 import 'my_log_utils.dart';
 
@@ -47,7 +47,7 @@ class MyFileUtils {
   }
 
   static String readAsString(String path) {
-    final file = getFile(path: path);
+    final file = getFile(path: path, checkExists: true);
     return file.existsSync() ? file.readAsStringSync() : '';
   }
 
@@ -60,6 +60,14 @@ class MyFileUtils {
 
   static void createFile(String path) =>
       getFile(path: path, checkExists: false).createSync(recursive: true);
+
+  static void writeJSON(String path, dynamic contents) {
+    final contentStr = jsonEncode(contents);
+    MyLogUtils.inf('write..$path:$contentStr');
+    getFile(path: path, checkExists: true).writeAsStringSync(contentStr);
+  }
+
+  static dynamic readJSON(String path) => jsonDecode(readAsString(path));
 
   static void createDir(String path) =>
       getDir(path: path, checkExists: false).createSync(recursive: true);

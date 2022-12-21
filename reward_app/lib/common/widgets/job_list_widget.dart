@@ -6,9 +6,10 @@ import '../utils/my_service_utils.dart';
 import '../utils/my_log_utils.dart';
 
 class JobListWidget extends StatefulWidget {
-  const JobListWidget({super.key, this.parseChild});
+  const JobListWidget({super.key, this.rightBootomChild, this.leftBootomChild});
 
-  final Function? parseChild;
+  final Function? rightBootomChild;
+  final Function? leftBootomChild;
 
   @override
   State<JobListWidget> createState() => _JobListWidgetState();
@@ -41,56 +42,63 @@ class _JobListWidgetState extends State<JobListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      separatorBuilder: (c, i) {
-        return Container(
-          color: DISABLED_COLOR,
-          height: 0.1,
-        );
-      },
-      padding: EdgeInsets.only(top: 0),
-      itemCount: jobList.length,
-      itemBuilder: (BuildContext c, int i) {
-        //如果到了表尾
-        if (jobList[i] == JOB_LIST_END) {
-          //不到最后一页,继续获取数据
-          bool nextSuccess = nextPage();
-          if (nextSuccess) {
-            //加载时显示loading
-            return Container(
-              padding: EdgeInsets.all(16.0),
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 24.0,
-                height: 24.0,
-                child: CircularProgressIndicator(strokeWidth: 2.0),
-              ),
-            );
-          } else {
-            //已经到最后一页,显示结束
+    return DefaultTextStyle.merge(
+      style: TextStyle(
+        fontSize: DEF_SIZE,
+      ),
+      child: ListView.separated(
+        separatorBuilder: (c, i) {
+          return Container(
+            color: DISABLED_COLOR,
+            height: 0.1,
+          );
+        },
+        padding: EdgeInsets.only(top: 0),
+        itemCount: jobList.length,
+        itemBuilder: (BuildContext c, int i) {
+          //如果到了表尾
+          if (jobList[i] == JOB_LIST_END) {
+            //不到最后一页,继续获取数据
+            bool nextSuccess = nextPage();
+            if (nextSuccess) {
+              //加载时显示loading
+              return Container(
+                padding: EdgeInsets.all(16.0),
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 24.0,
+                  height: 24.0,
+                  child: CircularProgressIndicator(strokeWidth: 2.0),
+                ),
+              );
+            } else {
+              //已经到最后一页,显示结束
+              return Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "没有更多了",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              );
+            }
+          } else if (jobList[i] == JOB_LIST_ERR) {
+            //服务端异常
             return Container(
               alignment: Alignment.center,
               padding: EdgeInsets.all(16.0),
               child: Text(
-                "没有更多了",
+                "服务端异常!",
                 style: TextStyle(color: Colors.grey),
               ),
             );
           }
-        } else if (jobList[i] == JOB_LIST_ERR) {
-          //服务端异常
-          return Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              "服务端异常!",
-              style: TextStyle(color: Colors.grey),
-            ),
-          );
-        }
-        return JobLineWidget(
-            jobInfo: jobList[i], parseChild: widget.parseChild);
-      },
+          return JobLineWidget(
+              jobInfo: jobList[i],
+              rightBootomChild: widget.rightBootomChild,
+              leftBootomChild: widget.leftBootomChild);
+        },
+      ),
     );
   }
 
@@ -144,10 +152,15 @@ class _JobListWidgetState extends State<JobListWidget> {
 }
 
 class JobLineWidget extends StatelessWidget {
-  const JobLineWidget({Key? key, required this.jobInfo, this.parseChild});
+  const JobLineWidget(
+      {Key? key,
+      required this.jobInfo,
+      this.rightBootomChild,
+      this.leftBootomChild});
 
   final jobInfo;
-  final Function? parseChild;
+  final Function? rightBootomChild;
+  final Function? leftBootomChild;
 
   @override
   Widget build(BuildContext context) {
@@ -231,22 +244,27 @@ class JobLineWidget extends StatelessWidget {
                       child: Flex(
                         direction: Axis.horizontal,
                         children: [
-                          Expanded(
-                            child: Text(
-                              "${jobInfo["success_count"]}人已赚|剩余${jobInfo["total_count"] - jobInfo["success_count"]}",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(color: DISABLED_COLOR),
-                            ),
-                          ),
-                          Expanded(
-                            child: parseChild != null
-                                ? parseChild!(jobInfo)
-                                : Text(
+                          leftBootomChild != null
+                              ? leftBootomChild!(jobInfo)
+                              : Expanded(
+                                  child: DefaultTextStyle.merge(
+                                    style: TextStyle(
+                                      color: DISABLED_COLOR,
+                                    ),
+                                    child: Text(
+                                      "${jobInfo["success_count"]}人已赚|剩余${jobInfo["total_count"] - jobInfo["success_count"]}",
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                          rightBootomChild != null
+                              ? rightBootomChild!(jobInfo)
+                              : Expanded(
+                                  child: Text(
                                     "支持设备:${jobInfo["system_type"]}",
                                     textAlign: TextAlign.right,
-                                    style: TextStyle(color: DISABLED_COLOR),
                                   ),
-                          ),
+                                ),
                         ],
                       ),
                     ),

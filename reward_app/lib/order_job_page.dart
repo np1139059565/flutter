@@ -66,20 +66,69 @@ class _OrderJobPageState extends State<OrderJobPage> {
                     'uid': '1',
                   },
                   child: JobListWidget(
-                    parseChild: (jobInfo) {
+                    leftBootomChild: (jobInfo) {
+                      return Expanded(
+                        flex: 5,
+                        child: DefaultTextStyle.merge(
+                          style: TextStyle(
+                            color: DISABLED_COLOR,
+                          ),
+                          child: Text('报名时间:${jobInfo['order_time']}'),
+                        ),
+                      );
+                    },
+                    rightBootomChild: (jobInfo) {
+                      MyLogUtils.inf(
+                          '${DateTime.now()} ${jobInfo['order_time']} ${DateTime.now().difference(DateTime.parse(jobInfo['order_time'])).inSeconds} ${jobInfo['max_used_seconds']}');
                       final expired = DateTime.now()
                               .difference(DateTime.parse(jobInfo['order_time']))
                               .inSeconds >
                           jobInfo['max_used_seconds'];
-                      MyLogUtils.inf(
-                          '${DateTime.now()} ${jobInfo['order_time']} ${DateTime.now().difference(DateTime.parse(jobInfo['order_time'])).inSeconds} ${jobInfo['max_used_seconds']}');
-                      return Text(
-                        expired ? "已过期" : jobInfo['job_status'],
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            color:
-                                expired||tabs.indexOf(jobInfo['job_status'])==tabs.indexOf('未通过') ? Colors.red.shade800 : Colors.green),
-                      );
+                      final jobStatus = jobInfo['job_status'];
+                      return ['未通过', '未提交'].contains(jobStatus)
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                OutlinedButton(
+                                  child: Text("提交"),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: DEF_COLOR),
+                                    padding: EdgeInsets.only(
+                                      left: 5,
+                                      right: 5,
+                                      bottom: 3,
+                                    ),
+                                    minimumSize: Size(1, 1),
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                Container(
+                                  child: OutlinedButton(
+                                    child: Text("放弃"),
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: DEF_COLOR),
+                                      padding: EdgeInsets.only(
+                                        left: 5,
+                                        right: 5,
+                                        bottom: 3,
+                                      ),
+                                      minimumSize: Size(1, 1),
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(
+                              expired ? "已过期" : jobStatus,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  color: expired ||
+                                          tabs.indexOf(jobStatus) ==
+                                              tabs.indexOf('未通过')
+                                      ? Colors.red.shade800
+                                      : Colors.green),
+                            );
                     },
                   ),
                 ),

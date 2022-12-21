@@ -24,11 +24,7 @@ class _AllJobPageState extends State<AllJobPage> {
   String _searchText = '';
 
   @override
-  Widget build(BuildContext c) => DefaultTextStyle.merge(
-        style: TextStyle(
-          fontSize: DEF_SIZE,
-        ),
-        child: Flex(
+  Widget build(BuildContext c) =>Flex(
           direction: Axis.vertical,
           children: [
             Expanded(
@@ -102,6 +98,5 @@ class _AllJobPageState extends State<AllJobPage> {
               ),
             ),
           ],
-        ),
-      );
+        );
 }

@@ -12,6 +12,7 @@ class UserPage extends StatefulWidget {
   const UserPage({super.key});
 
   final USER_DIR = 'users';
+  final USER_INFO = 'user_info';
 
   static dynamic getAppBar() {
     return AppBar(
@@ -28,19 +29,35 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  String _this_user = '';
+  String _thisUser = '';
+  Map<String, String> _userInfo = {};
+  int orderCount = 0;
+
   bool checkLogin() {
     final users = MyFileUtils.list(path: widget.USER_DIR);
     MyLogUtils.inf('check login $users..');
     if (users.length > 0) {
       setState(() {
-        _this_user = users.first.split('/').last;
+        _thisUser = users.first.split('/').last;
+        _userInfo = MyFileUtils.readJSON(
+            '${widget.USER_DIR}/$_thisUser/${widget.USER_INFO}');
+        getOrderCountAsync();
       });
     }
     return users.length > 0;
   }
 
-  void login(uid, user, pwd) {
+  void getOrderCountAsync() =>
+      MyServiceUtils.getAsync(MyServiceUtils.orderCountUri,
+          queryParameters: {'uid': _userInfo['uid']}, (e, r) {
+        if (r != null) {
+          setState(() {
+            orderCount = r['count'];
+          });
+        }
+      });
+
+  void loginAsync(uid, user, pwd) {
     MyServiceUtils.getAsync(MyServiceUtils.sessionUri, (e, session) {
       if (session == null) {
         MyLogUtils.inf('not find session..');
@@ -55,8 +72,14 @@ class _UserPageState extends State<UserPage> {
           if (body != null) {
             MyLogUtils.inf('$user login is success');
             MyFileUtils.createDir('${widget.USER_DIR}/$user');
+            MyFileUtils.createFile(
+                '${widget.USER_DIR}/$user/${widget.USER_INFO}');
+            body['uid'] = uid;
+            body['user'] = user;
+            MyFileUtils.writeJSON(
+                '${widget.USER_DIR}/$user/${widget.USER_INFO}', body);
             setState(() {
-              _this_user = user;
+              checkLogin();
             });
           }
         },
@@ -91,7 +114,7 @@ class _UserPageState extends State<UserPage> {
                   icon: Container(
                     width: 80,
                     height: 80,
-                    child: _this_user.isEmpty
+                    child: _thisUser.isEmpty
                         ? Icon(
                             Icons.person,
                             size: 80,
@@ -101,7 +124,7 @@ class _UserPageState extends State<UserPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(40),
-                      image: _this_user.isEmpty
+                      image: _thisUser.isEmpty
                           ? null
                           : DecorationImage(
                               image: NetworkImage(
@@ -113,7 +136,7 @@ class _UserPageState extends State<UserPage> {
                     ),
                   ),
                   label: Text(
-                    _this_user.isEmpty ? "点击登录" : _this_user,
+                    _thisUser.isEmpty ? "点击登录" : _thisUser,
                     style: TextStyle(
                       fontSize: TITLE_SIZE * 1.2,
                       overflow: TextOverflow.ellipsis,
@@ -121,13 +144,14 @@ class _UserPageState extends State<UserPage> {
                     maxLines: 3,
                   ),
                   onPressed: () {
-                    if (_this_user.isEmpty) {
-                      login(1, 'admin', '0192023a7bbd73250516f069df18b500');
+                    if (_thisUser.isEmpty) {
+                      loginAsync(
+                          1, 'admin', '0192023a7bbd73250516f069df18b500');
                     } else {
                       setState(() {
-                        _this_user = '';
+                        _thisUser = '';
                       });
-                      MyFileUtils.deleteDir('${widget.USER_DIR}/$_this_user');
+                      MyFileUtils.deleteDir('${widget.USER_DIR}/$_thisUser');
                     }
                   },
                   style: ButtonStyle(
@@ -294,10 +318,43 @@ class _UserPageState extends State<UserPage> {
                                     Container(
                                       width: 60,
                                       height: 60,
-                                      child: Icon(
-                                        Icons.assignment_turned_in,
-                                        size: 30,
-                                        color: Colors.white,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.assignment_turned_in,
+                                            size: 30,
+                                            color: Colors.white,
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            right: 5,
+                                            child: orderCount > 0
+                                                ? Container(
+                                                    padding: EdgeInsets.only(
+                                                        left: DEF_SIZE / 4,
+                                                        right: DEF_SIZE / 4),
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                        DEF_SIZE,
+                                                      ),
+                                                    ),
+                                                    height: DEF_SIZE,
+                                                    child: Text(
+                                                      '${orderCount > 99 ? '99+' : orderCount}',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize:
+                                                            DEF_SIZE * 0.8,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Text(''),
+                                          ),
+                                        ],
                                       ),
                                       decoration: BoxDecoration(
                                         color: Colors.cyan,
